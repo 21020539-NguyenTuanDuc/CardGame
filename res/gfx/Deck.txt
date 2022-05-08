@@ -1,0 +1,15 @@
+1x Adder
+2x Bee
+1x Bullfrog
+1x Coyote
+2x Geck
+1x Grizzly
+1x Hawk
+2x Rabbit
+1x Raven
+1x RiverSnapper
+2x Squirrel
+1x Stoat
+1x Undeadcat
+1x Urayuli
+1x Wolf
