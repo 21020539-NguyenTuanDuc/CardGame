@@ -23,7 +23,9 @@ public:
 	void render(float p_x, float p_y, const char* p_text, TTF_Font* font, SDL_Color textColor);
 	void renderCenter(float p_x, float p_y, const char* p_text, TTF_Font* font, SDL_Color textColor);
 	void display();
+	void renderText(int p_x, int p_y, std::string text, TTF_Font* font, SDL_Color textColor);
 	void renderCard(Card& p_card);
+	void renderCardStat(Card& p_card, TTF_Font* font);
 private:
 	SDL_Window* window;
 };

@@ -31,39 +31,9 @@ bool summon(Slot& sSlot, Card& sCard, SDL_Event* e)
 	if(nonEmptySlot < sCard.Cost) return false;
 	else
 	{
-		int cnt_choose = 0;
-		while(cnt_choose < sCard.Cost)
-		{
-			while(SDL_PollEvent(e))
-			{
-				if(e->type == SDL_MOUSEBUTTONDOWN)
-				{
-					SDL_GetMouseState(&Mouse_x, &Mouse_y);
-					for(int n=0;n<S.size();n++)
-					{
-						if(Mouse_x >= S[n].pos.x && Mouse_x <= S[n].pos.x + S[n].w && Mouse_y >= S[n].pos.y && Mouse_y <= S[n].pos.y + S[n].h)
-						{
-							if(S[n].isEmpty==0 && S[n].isChoosing == 0)
-							{
-								S[n].isChoosing = true;
-								cnt_choose++;
-							}
-						}
-					}
-				}
-			}
-		}
 		sSlot.sCard = sCard;
 		sSlot.sCard.target.x = sSlot.pos.x;
 		sSlot.sCard.target.y = sSlot.pos.y;;		
-		for(int n=0;n<S.size();n++)
-		{
-			if(S[n].isChoosing)
-			{
-				S[n].isEmpty = true;
-				S[n].isChoosing = false;
-			}
-		}
 		return true;
 	}
 }

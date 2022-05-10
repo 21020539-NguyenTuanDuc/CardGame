@@ -2,6 +2,7 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 #include <iostream>
+#include <string.h>
 
 #include "RenderWindow.h"
 #include "Entity.h"
@@ -131,6 +132,16 @@ void RenderWindow::display()
 	SDL_RenderPresent(renderer);
 }
 
+void RenderWindow::renderText(int p_x, int p_y, std::string text, TTF_Font* font, SDL_Color textColor)
+{
+    SDL_Surface *textSurface = TTF_RenderText_Blended(font, text.c_str(), textColor);
+    SDL_Rect dsRect = {p_x, p_y, textSurface->w, textSurface->h};
+    SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+    SDL_RenderCopy(renderer, textTexture, nullptr, &dsRect);
+    SDL_FreeSurface(textSurface);
+    SDL_DestroyTexture(textTexture);
+}
+
 void RenderWindow::renderCard(Card& p_card)
 {
 	SDL_Rect dst;
@@ -140,4 +151,10 @@ void RenderWindow::renderCard(Card& p_card)
 	dst.x = p_card.pos.x;
 	dst.y = p_card.pos.y;
 	SDL_RenderCopy(renderer, p_card.cardTexture, NULL, &dst);
+}
+
+void RenderWindow::renderCardStat(Card& p_card, TTF_Font* font)
+{
+	SDL_Color white = { 255, 255, 255 };
+	renderText(p_card.pos.x, p_card.pos.y, std::to_string(p_card.ATK) + "/" + std::to_string(p_card.HP), font, white);
 }
