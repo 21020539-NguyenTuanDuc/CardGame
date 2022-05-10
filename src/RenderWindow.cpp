@@ -156,5 +156,92 @@ void RenderWindow::renderCard(Card& p_card)
 void RenderWindow::renderCardStat(Card& p_card, TTF_Font* font)
 {
 	SDL_Color white = { 255, 255, 255 };
-	renderText(p_card.pos.x, p_card.pos.y, std::to_string(p_card.ATK) + "/" + std::to_string(p_card.HP), font, white);
+	renderText(p_card.pos.x+card_w/2-15, p_card.pos.y+card_h, std::to_string(p_card.ATK) + "/" + std::to_string(p_card.HP), font, white); // 15 fix stat to middle card
+}
+
+void RenderWindow::renderCardRip(Card& p_card)
+{
+	const int cardRipFrame = 13;
+	const int sprite_w = 123;
+	const int sprite_h = 182;
+	SDL_Rect gSpriteClips[ cardRipFrame ];
+	SDL_Texture* spriteSheet = loadTexture("res/gfx/cardripFX.png");
+	//Set sprite clips
+	gSpriteClips[ 0 ].x =  18;
+	gSpriteClips[ 0 ].y =  13;
+	gSpriteClips[ 0 ].w = sprite_w;
+	gSpriteClips[ 0 ].h = sprite_h;
+
+	gSpriteClips[ 1 ].x =  143;
+	gSpriteClips[ 1 ].y =   13;
+	gSpriteClips[ 1 ].w = sprite_w;
+	gSpriteClips[ 1 ].h = sprite_h;
+	
+	gSpriteClips[ 2 ].x = 268;
+	gSpriteClips[ 2 ].y =  13;
+	gSpriteClips[ 2 ].w = sprite_w;
+	gSpriteClips[ 2 ].h = sprite_h;
+
+	gSpriteClips[ 3 ].x = 393;
+	gSpriteClips[ 3 ].y =  13;
+	gSpriteClips[ 3 ].w = sprite_w;;
+	gSpriteClips[ 3 ].h = sprite_h;
+
+	gSpriteClips[ 4 ].x = 509;
+	gSpriteClips[ 4 ].y =  13;
+	gSpriteClips[ 4 ].w = sprite_w;
+	gSpriteClips[ 4 ].h = sprite_h;
+
+	gSpriteClips[ 5 ].x = 630;
+	gSpriteClips[ 5 ].y =  13;
+	gSpriteClips[ 5 ].w = sprite_w;
+	gSpriteClips[ 5 ].h = sprite_h;
+	
+	gSpriteClips[ 6 ].x = 750;
+	gSpriteClips[ 6 ].y =  13;
+	gSpriteClips[ 6 ].w = sprite_w;
+	gSpriteClips[ 6 ].h = sprite_h;
+
+	gSpriteClips[ 7 ].x =  17;
+	gSpriteClips[ 7 ].y = 238;
+	gSpriteClips[ 7 ].w = sprite_w;
+	gSpriteClips[ 7 ].h = sprite_h;
+	
+	gSpriteClips[ 8 ].x =  134;
+	gSpriteClips[ 8 ].y =  238;
+	gSpriteClips[ 8 ].w = sprite_w;
+	gSpriteClips[ 8 ].h = sprite_h;
+
+	gSpriteClips[ 9 ].x = 266;
+	gSpriteClips[ 9 ].y = 238;
+	gSpriteClips[ 9 ].w = sprite_w;
+	gSpriteClips[ 9 ].h = sprite_h;
+	
+	gSpriteClips[ 10 ].x = 386;
+	gSpriteClips[ 10 ].y = 238;
+	gSpriteClips[ 10 ].w = sprite_w;
+	gSpriteClips[ 10 ].h = sprite_h;
+
+	gSpriteClips[ 11 ].x = 537;
+	gSpriteClips[ 11 ].y = 238;
+	gSpriteClips[ 11 ].w = sprite_w;
+	gSpriteClips[ 11 ].h = sprite_h;
+
+	gSpriteClips[ 12 ].x = 689;
+	gSpriteClips[ 12 ].y = 238;
+	gSpriteClips[ 12 ].w = sprite_w;
+	gSpriteClips[ 12 ].h = sprite_h;
+
+	SDL_Rect dst;
+	dst.w = sprite_w;
+	dst.h = sprite_h;
+	dst.x = p_card.pos.x - 16; // 18 = (sprite_w - card_w) / 2;
+	dst.y = p_card.pos.y - 28;
+
+	for(int i=0;i<cardRipFrame;i++)
+	{
+		SDL_RenderCopy(renderer, spriteSheet, &gSpriteClips[i], &dst);
+		display();
+	}
+	// SDL_RenderCopy(renderer, spriteSheet, &gSpriteClips[cnt], &dst);
 }
