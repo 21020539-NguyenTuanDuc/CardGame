@@ -31,6 +31,7 @@ bool summon(Slot& sSlot, Card& sCard, SDL_Event* e)
 	if(nonEmptySlot < sCard.Cost) return false;
 	else
 	{
+		if(sSlot.isEmpty == false) window.renderCardRip(sSlot.sCard);
 		sSlot.sCard = sCard;
 		sSlot.sCard.target.x = sSlot.pos.x;
 		sSlot.sCard.target.y = sSlot.pos.y;;		
@@ -67,6 +68,7 @@ TTF_Font* font32 = TTF_OpenFont("res/font/font.ttf", 32);
 TTF_Font* font24 = TTF_OpenFont("res/font/font.ttf", 24);
 TTF_Font* yafont32 = TTF_OpenFont("res/font/yafont.ttf", 32);
 TTF_Font* yafont24 = TTF_OpenFont("res/font/yafont.ttf", 24);
+TTF_Font* pixelfont24 = TTF_OpenFont("res/font/pixelfont.ttf", 24);
 
 
 bool gameRunning = true;
@@ -183,21 +185,22 @@ void update()
 
 	updateHand();
 
-	for(int j=0;j<S.size();j++)
-	{
-		if(!S[j].isEmpty)
-		{
-			S[j].sCard.update(deltaTime);
-			window.renderCard(S[j].sCard);
-		}
-	}
-
 	for(int i=0;i<Hand.size();i++)
 	{
 		Hand[i].update(deltaTime);
 		window.renderCard(Hand[i]);
 	}
 	
+	for(int j=0;j<S.size();j++)
+	{
+		if(!S[j].isEmpty)
+		{
+			S[j].sCard.update(deltaTime);
+			window.renderCard(S[j].sCard);
+			window.renderCardStat(S[j].sCard, pixelfont24);
+		}
+	}
+
 	window.display();
 }
 
@@ -225,6 +228,7 @@ int main( int argc, char* args[] )
 	TTF_CloseFont(font24);
 	TTF_CloseFont(yafont32);
 	TTF_CloseFont(yafont24);
+	TTF_CloseFont(pixelfont24);
 	SDL_Quit();
 	TTF_Quit();
 	return 0;
