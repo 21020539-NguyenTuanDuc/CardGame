@@ -19,7 +19,13 @@ std::vector<Slot> S = {
     Slot(744, 328)
 };
 
+// Get mouse position
 int Mouse_x, Mouse_y;
+
+// Use sprites
+Card destroyedCard;
+bool isDestroyed = false;
+int frameCnt = 0;
 
 bool summon(Slot& sSlot, Card& sCard, SDL_Event* e)
 {
@@ -31,7 +37,7 @@ bool summon(Slot& sSlot, Card& sCard, SDL_Event* e)
 	if(nonEmptySlot < sCard.Cost) return false;
 	else
 	{
-		if(sSlot.isEmpty == false) window.renderCardRip(sSlot.sCard);
+		// if(sSlot.isEmpty == false) window.renderCardRip(sSlot.sCard);
 		sSlot.sCard = sCard;
 		sSlot.sCard.target.x = sSlot.pos.x;
 		sSlot.sCard.target.y = sSlot.pos.y;;		
@@ -164,7 +170,9 @@ void update()
 					{
 						if(summon(S[j], Hand[i], &mouseEvent))
 						{
+							if(S[j].isEmpty == false) isDestroyed = true;
 							S[j].isEmpty = false;
+							destroyedCard = S[j].sCard;
 							Hand.erase(Hand.begin()+i);
 						}
 						else Mix_PlayChannel(-1, ErrorSFX, 0);
@@ -191,6 +199,21 @@ void update()
 		window.renderCard(Hand[i]);
 	}
 	
+	// destroy sprite
+	if(isDestroyed == true)
+	{
+		if(frameCnt<=12)
+		{
+			window.renderCardRip(destroyedCard, frameCnt);
+			frameCnt++;
+		}
+		else
+		{
+			frameCnt = 0;
+			isDestroyed = false;
+		}
+	}
+
 	for(int j=0;j<S.size();j++)
 	{
 		if(!S[j].isEmpty)

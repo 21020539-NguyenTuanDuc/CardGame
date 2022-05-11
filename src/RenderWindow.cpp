@@ -159,7 +159,7 @@ void RenderWindow::renderCardStat(Card& p_card, TTF_Font* font)
 	renderText(p_card.pos.x+card_w/2-15, p_card.pos.y+card_h, std::to_string(p_card.ATK) + "/" + std::to_string(p_card.HP), font, white); // 15 fix stat to middle card
 }
 
-void RenderWindow::renderCardRip(Card& p_card)
+void RenderWindow::renderCardRip(Card& p_card, int cnt)
 {
 	const int cardRipFrame = 13;
 	const int sprite_w = 123;
@@ -235,13 +235,13 @@ void RenderWindow::renderCardRip(Card& p_card)
 	SDL_Rect dst;
 	dst.w = sprite_w;
 	dst.h = sprite_h;
-	dst.x = p_card.pos.x - 16; // 18 = (sprite_w - card_w) / 2;
-	dst.y = p_card.pos.y - 28;
+	dst.x = p_card.target.x - 16; // 18 = (sprite_w - card_w) / 2;
+	dst.y = p_card.target.y - 28;
 
-	for(int i=0;i<cardRipFrame;i++)
-	{
-		SDL_RenderCopy(renderer, spriteSheet, &gSpriteClips[i], &dst);
-		display();
-	}
-	// SDL_RenderCopy(renderer, spriteSheet, &gSpriteClips[cnt], &dst);
+	// for(int i=0;i<cardRipFrame;i++)
+	// {
+	// 	SDL_RenderCopy(renderer, spriteSheet, &gSpriteClips[i], &dst);
+	// 	display();
+	// }
+	SDL_RenderCopy(renderer, spriteSheet, &gSpriteClips[cnt], &dst);
 }
