@@ -153,6 +153,24 @@ void RenderWindow::renderCard(Card& p_card)
 	SDL_RenderCopy(renderer, p_card.cardTexture, NULL, &dst);
 }
 
+void RenderWindow::renderWaitCard(Card& p_card)
+{
+	SDL_Rect dst;
+	SDL_QueryTexture(p_card.cardTexture, NULL, NULL, &dst.w, &dst.h);
+	dst.w /= (1.72);
+	dst.h /= (1.632*2);
+	dst.x = p_card.pos.x;
+	dst.y = p_card.pos.y;
+
+	SDL_Rect src;
+	src.x = 6;
+	src.y = 82;
+	src.w = 144 ;
+	src.h = 116;
+
+	SDL_RenderCopy(renderer, p_card.cardTexture, &src, &dst);
+}
+
 void RenderWindow::renderCardStat(Card& p_card, TTF_Font* font)
 {
 	SDL_Color white = { 255, 255, 255 };
@@ -238,10 +256,5 @@ void RenderWindow::renderCardRip(Card& p_card, int cnt)
 	dst.x = p_card.target.x - 16; // 18 = (sprite_w - card_w) / 2;
 	dst.y = p_card.target.y - 28;
 
-	// for(int i=0;i<cardRipFrame;i++)
-	// {
-	// 	SDL_RenderCopy(renderer, spriteSheet, &gSpriteClips[i], &dst);
-	// 	display();
-	// }
 	SDL_RenderCopy(renderer, spriteSheet, &gSpriteClips[cnt], &dst);
 }

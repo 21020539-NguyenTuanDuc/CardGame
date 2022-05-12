@@ -25,6 +25,7 @@ public:
 	void display();
 	void renderText(int p_x, int p_y, std::string text, TTF_Font* font, SDL_Color textColor);
 	void renderCard(Card& p_card);
+	void renderWaitCard(Card& p_card);
 	void renderCardStat(Card& p_card, TTF_Font* font);
 	void renderCardRip(Card& p_card, int cnt);
 private:

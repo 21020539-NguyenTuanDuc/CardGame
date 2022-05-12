@@ -12,12 +12,7 @@ RenderWindow window("CardGame", Width, Height);
 #include "BaseCardType.h"
 #include "Button.h"
 #include "Slot.h"
-std::vector<Slot> S = {
-    Slot(400, 328),
-    Slot(515, 328),
-    Slot(630, 328),
-    Slot(744, 328)
-};
+
 
 // Get mouse position
 int Mouse_x, Mouse_y;
@@ -27,7 +22,7 @@ Card destroyedCard;
 bool isDestroyed = false;
 int frameCnt = 0;
 
-bool summon(Slot& sSlot, Card& sCard, SDL_Event* e)
+bool summon(Slot& sSlot, Card& sCard)
 {
 	int nonEmptySlot = 0;
 	for(int m=0;m<S.size();m++)
@@ -37,7 +32,6 @@ bool summon(Slot& sSlot, Card& sCard, SDL_Event* e)
 	if(nonEmptySlot < sCard.Cost) return false;
 	else
 	{
-		// if(sSlot.isEmpty == false) window.renderCardRip(sSlot.sCard);
 		sSlot.sCard = sCard;
 		sSlot.sCard.target.x = sSlot.pos.x;
 		sSlot.sCard.target.y = sSlot.pos.y;;		
@@ -59,7 +53,7 @@ bool init()
 
 bool SDLinit = init();
 
-SDL_Texture* IGmap = window.loadTexture("res/gfx/IGmap_Resized.png");
+SDL_Texture* IGmap = window.loadTexture("res/gfx/IGmap_Resized.jpg");
 SDL_Texture* IGtitleScreen = window.loadTexture("res/gfx/IGtitleScreen.png");
 
 Mix_Chunk* advanceTitleScreen = Mix_LoadWAV("res/sfx/titlescreenplay.wav");
@@ -83,7 +77,6 @@ bool title = false;
 bool advanceTitle = false;
 
 SDL_Event event;
-SDL_Event mouseEvent;
 
 int state = 1; //0 = title screen, 1 = game, 2 = end screen
 
@@ -91,7 +84,65 @@ Uint64 currentTick = SDL_GetPerformanceCounter();
 Uint64 lastTick = 0;
 double deltaTime = 0;
 
-void graphic(){}
+// level setting
+int level = -1;
+bool level_over = true;
+int turn = 0;
+bool turn_over = false;
+
+void graphic()
+{
+	window.clear();
+	window.renderBG(0, 0, IGmap);
+
+	for(int i=0;i<Hand.size();i++)
+	{
+		window.renderCard(Hand[i]);
+	}
+	
+	// destroy card sprite
+	if(isDestroyed == true)
+	{
+		if(frameCnt<=12)
+		{
+			window.renderCardRip(destroyedCard, frameCnt);
+			frameCnt++;
+		}
+		else
+		{
+			frameCnt = 0;
+			isDestroyed = false;
+		}
+	}
+
+	for(int j=0;j<S.size();j++)
+	{
+		if(!S[j].isEmpty)
+		{
+			window.renderCard(S[j].sCard);
+			window.renderCardStat(S[j].sCard, pixelfont24);
+		}
+	}
+
+	for(int i=0;i<OSlot.size();i++)
+	{
+		if(!OSlot[i].isEmpty)
+		{
+			window.renderCard(OSlot[i].sCard);
+			window.renderCardStat(OSlot[i].sCard, pixelfont24);
+		}
+	}
+
+	for(int i=0;i<OSlot.size();i++)
+	{
+		if(!OwaitSlot[i].isEmpty)
+		{
+			window.renderWaitCard(OwaitSlot[i].sCard);
+		}
+	}
+
+	window.display();
+}
 void titleScreen()
 {
 	// if(SDL_GetTicks64() < 5000)
@@ -152,6 +203,40 @@ void update()
 	currentTick = SDL_GetPerformanceCounter();
 	deltaTime = (double)((currentTick - lastTick)*1000 / (double)SDL_GetPerformanceFrequency() );
 	
+	if(turn_over == true)
+	{
+		drawCard();
+		turn_over = false;
+	}
+
+	if(level_over == true)
+	{
+		level++;
+		loadLevel(level);
+		shuffleDeck();
+		getCard();
+		turn = 0;
+		level_over = false;
+	}
+
+	for(int i=0;i<4;i++)
+	{
+		if(OwaitSlot[i].isEmpty && ORow[i].size()!=0)
+		{
+			OwaitSlot[i].sCard = ORow[i].front();
+			ORow[i].erase(ORow[i].begin());
+			OwaitSlot[i].sCard.target = OwaitSlot[i].pos;
+			OwaitSlot[i].isEmpty = false;
+		}
+		if(OSlot[i].isEmpty && !OwaitSlot[i].isEmpty)
+		{
+			OSlot[i].sCard = OwaitSlot[i].sCard;
+			OSlot[i].sCard.target = OSlot[i].pos;
+			OSlot[i].isEmpty = false;
+			OwaitSlot[i].isEmpty = true;
+		}
+	}
+
 	while (SDL_PollEvent(&event))
 	{
 		switch(event.type)
@@ -168,7 +253,7 @@ void update()
 					for(int j=0;j<S.size();j++)
 					if(Mouse_x >= S[j].pos.x && Mouse_x <= S[j].pos.x + S[j].w && Mouse_y >= S[j].pos.y && Mouse_y <= S[j].pos.y + S[j].h)
 					{
-						if(summon(S[j], Hand[i], &mouseEvent))
+						if(summon(S[j], Hand[i]))
 						{
 							if(S[j].isEmpty == false) isDestroyed = true;
 							S[j].isEmpty = false;
@@ -183,35 +268,16 @@ void update()
 			if(Mouse_x >= next.pos.x && Mouse_x <= next.pos.x + next.w && Mouse_y >= next.pos.y && Mouse_y <= next.pos.y + next.h)
 			{
 				Mix_PlayChannel(-1, advanceTitleScreen, 0);
-				drawCard();
+				turn_over = true;
+				turn++;
 			}
 		}
 	}
-
-	window.clear();
-	window.renderBG(0, 0, IGmap);
-
 	updateHand();
 
 	for(int i=0;i<Hand.size();i++)
 	{
 		Hand[i].update(deltaTime);
-		window.renderCard(Hand[i]);
-	}
-	
-	// destroy sprite
-	if(isDestroyed == true)
-	{
-		if(frameCnt<=12)
-		{
-			window.renderCardRip(destroyedCard, frameCnt);
-			frameCnt++;
-		}
-		else
-		{
-			frameCnt = 0;
-			isDestroyed = false;
-		}
 	}
 
 	for(int j=0;j<S.size();j++)
@@ -219,15 +285,25 @@ void update()
 		if(!S[j].isEmpty)
 		{
 			S[j].sCard.update(deltaTime);
-			window.renderCard(S[j].sCard);
-			window.renderCardStat(S[j].sCard, pixelfont24);
 		}
 	}
 
-	window.display();
+	for(int i=0;i<OSlot.size();i++)
+	{
+		if(!OSlot[i].isEmpty)
+		{
+			OSlot[i].sCard.update(deltaTime);
+		}
+		if(!OwaitSlot[i].isEmpty)
+		{
+			OwaitSlot[i].sCard.update(deltaTime);
+		}
+	}
+
 }
 
-void game(){
+void game()
+{
 	if(state == 0){
 		titleScreen();
 	}
@@ -240,8 +316,6 @@ void game(){
 
 int main( int argc, char* args[] )
 {
-	shuffleDeck();
-	getCard();
 	while(gameRunning){
 		game();
 	}
