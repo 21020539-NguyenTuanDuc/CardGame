@@ -4,10 +4,7 @@
 class User{
 public:
     int DmgTaken;
-    User(int _DmgTaken = 0){
-        DmgTaken = _DmgTaken;
+    User(){
+        DmgTaken = 0;
     }
 };
-
-User Player;
-User Bot;

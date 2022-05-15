@@ -6,23 +6,6 @@
 Mix_Chunk* _click = Mix_LoadWAV("res/sfx/mouseclick.mp3");
 
 void Card::Battle(Card& Attacker, Card& Defender, int& Turn){
-    if(Attacker.Ability == None){
-        Defender.HP -= Attacker.ATK;
-        if(Defender.HP<=0) Destroy(Defender);
-    }
-    else if(Attacker.Ability == TouchofDeath){
-        Destroy(Defender);
-    }
-    else if(Attacker.Ability == Airborne){
-        if(Defender.Ability == MightyLeap){
-            Defender.HP -= Attacker.ATK;
-            if(Defender.HP<=0) Destroy(Defender);
-        }
-        else{
-            if(Turn % 2==1) Bot.DmgTaken += Attacker.ATK;
-            else Player.DmgTaken += Attacker.ATK;
-        }
-    }
 }
 
 void Card::moveUp()

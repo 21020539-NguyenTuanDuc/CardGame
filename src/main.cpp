@@ -12,7 +12,9 @@ RenderWindow window("CardGame", Width, Height);
 #include "BaseCardType.h"
 #include "Button.h"
 #include "Slot.h"
-
+#include "User.h"
+User Player;
+User Bot;
 
 // Get mouse position
 int Mouse_x, Mouse_y;
@@ -53,26 +55,31 @@ bool init()
 
 bool SDLinit = init();
 
+// Texture
 SDL_Texture* IGmap = window.loadTexture("res/gfx/IGmap_Resized.jpg");
 SDL_Texture* IGtitleScreen = window.loadTexture("res/gfx/IGtitleScreen.png");
 
+// Sound
 Mix_Chunk* advanceTitleScreen = Mix_LoadWAV("res/sfx/titlescreenplay.wav");
 Mix_Chunk* click = Mix_LoadWAV("res/sfx/mouseclick.mp3");
 Mix_Chunk* titleScreenMusic = Mix_LoadWAV("res/sfx/titleScreenMusic.mp3");
 Mix_Chunk* ErrorSFX = Mix_LoadWAV("res/sfx/Error.mp3");
 
+// Color
 SDL_Color white = { 255, 255, 255 };
 SDL_Color black = { 0, 0, 0 };
 
+// Font
 TTF_Font* font32 = TTF_OpenFont("res/font/font.ttf", 32);
 TTF_Font* font24 = TTF_OpenFont("res/font/font.ttf", 24);
 TTF_Font* yafont32 = TTF_OpenFont("res/font/yafont.ttf", 32);
 TTF_Font* yafont24 = TTF_OpenFont("res/font/yafont.ttf", 24);
 TTF_Font* pixelfont24 = TTF_OpenFont("res/font/pixelfont.ttf", 24);
 
-
+// Game running condition
 bool gameRunning = true;
 
+// Title screen
 bool title = false;
 bool advanceTitle = false;
 
@@ -80,6 +87,7 @@ SDL_Event event;
 
 int state = 1; //0 = title screen, 1 = game, 2 = end screen
 
+// Delta Time
 Uint64 currentTick = SDL_GetPerformanceCounter();
 Uint64 lastTick = 0;
 double deltaTime = 0;
@@ -89,6 +97,12 @@ int level = -1;
 bool level_over = true;
 int turn = 0;
 bool turn_over = false;
+int dmgGap = 0;
+bool setWin = false;
+
+// battle setting
+bool S_battle_over[4] = {bool(false), bool(false), bool(false), bool(false)};
+bool OS_battle_over[4] = {bool(false), bool(false), bool(false), bool(false)};
 
 void graphic()
 {
@@ -202,23 +216,98 @@ void update()
 	lastTick = currentTick;
 	currentTick = SDL_GetPerformanceCounter();
 	deltaTime = (double)((currentTick - lastTick)*1000 / (double)SDL_GetPerformanceFrequency() );
-	
-	if(turn_over == true)
+
+	if(turn_over)
 	{
-		drawCard();
-		turn_over = false;
+		for(int i=0;i<4;i++)
+		{
+			if(!S_battle_over[i])
+			{
+				Slot::battle(S[i], OSlot[i], Player, Bot);
+				S_battle_over[i] = true;
+				if(OSlot[i].sCard.HP <= 0 && OSlot[i].isEmpty == false)
+				{
+					OSlot[i].isEmpty = true;
+					destroyedCard = OSlot[i].sCard;
+					isDestroyed = true;
+				}
+			}
+		}
+		
+		// check win
+		if(dmgGap >= 5)
+		{
+			level_over = true;
+			setWin = true;
+		}
+		if(dmgGap <= -5)
+		{
+			level_over = true;
+			setWin = false;
+		}
+
+		if(S_battle_over[0] && S_battle_over[1] && S_battle_over[2] && S_battle_over[3])
+		{
+			for(int i=0;i<4;i++)
+			{
+				if(!OS_battle_over[i])
+				{
+					Slot::battle(OSlot[i], S[i], Bot, Player);
+					OS_battle_over[i] = true;
+					if(S[i].sCard.HP <= 0 && S[i].isEmpty == false)
+					{
+						S[i].isEmpty = true;
+						destroyedCard = S[i].sCard;
+						isDestroyed = true;
+					}
+				}
+			}
+		}
+
+		if(S_battle_over[0] && S_battle_over[1] && S_battle_over[2] && S_battle_over[3] && OS_battle_over[0] && OS_battle_over[1] && OS_battle_over[2] && OS_battle_over[3])
+		{
+			turn_over = false;
+			drawCard();
+			for(int i=0;i<4;i++)
+			{
+				S_battle_over[i] = false;
+				OS_battle_over[i] = false;
+			}
+		}
+	}
+
+	dmgGap = Player.DmgTaken - Bot.DmgTaken;
+	if(dmgGap >= 5)
+	{
+		level_over = true;
+		setWin = true;
+	}
+	if(dmgGap <= -5)
+	{
+		level_over = true;
+		setWin = false;
 	}
 
 	if(level_over == true)
 	{
-		level++;
+		// Reset field
+		for(int i=0;i<4;i++)
+		{
+			OwaitSlot[i].isEmpty = true;
+			OSlot[i].isEmpty = true;
+			S[i].isEmpty = true;
+		}
+		if(setWin = true) level++;
 		loadLevel(level);
 		shuffleDeck();
 		getCard();
+		Player.DmgTaken = 0;
+		Bot.DmgTaken = 0;
 		turn = 0;
 		level_over = false;
 	}
 
+	// push opponent card up
 	for(int i=0;i<4;i++)
 	{
 		if(OwaitSlot[i].isEmpty && ORow[i].size()!=0)
@@ -265,7 +354,7 @@ void update()
 				}
 				Hand[i].handleEvent(&event);
 			}
-			if(Mouse_x >= next.pos.x && Mouse_x <= next.pos.x + next.w && Mouse_y >= next.pos.y && Mouse_y <= next.pos.y + next.h)
+			if(Mouse_x >= next.pos.x && Mouse_x <= next.pos.x + next.w && Mouse_y >= next.pos.y && Mouse_y <= next.pos.y + next.h && turn_over == false)
 			{
 				Mix_PlayChannel(-1, advanceTitleScreen, 0);
 				turn_over = true;
@@ -273,6 +362,7 @@ void update()
 			}
 		}
 	}
+
 	updateHand();
 
 	for(int i=0;i<Hand.size();i++)

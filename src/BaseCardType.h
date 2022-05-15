@@ -33,8 +33,8 @@ SDL_Texture* Wolf = window.loadTexture("res/gfx/Wolf.jpg");
 
 std::vector<Card> Deck = {
     Card(startPos_x, startPos_y, 1, 1, 2, TouchofDeath, Adder),
-    Card(startPos_x, startPos_y, 1, 1, 0, None, Bee),
-    Card(startPos_x, startPos_y, 1, 1, 0, None, Bee),
+    Card(startPos_x, startPos_y, 1, 1, 0, Airborne, Bee),
+    Card(startPos_x, startPos_y, 1, 1, 0, Airborne, Bee),
     Card(startPos_x, startPos_y, 1, 2, 1, MightyLeap, Bullfrog),
     Card(startPos_x, startPos_y, 2, 1, 0, None, Coyote),
     Card(startPos_x, startPos_y, 1, 1, 0, None, Geck),
@@ -53,7 +53,7 @@ std::vector<Card> Deck = {
     Card(startPos_x, startPos_y, 3, 2, 2, None, Wolf)
 };
 
-std::vector<Card> Hand;
+std::vector<Card> Hand = {};
 
 std::vector<Card> ORow[4];
 
@@ -80,15 +80,6 @@ std::vector<Slot> OwaitSlot =
 	Slot(741, 77)
 };
 
-void getCard()
-{
-	for(int i = 0;i < 5;i++) // number of start card
-	{
-		Hand.push_back(Deck[0]);
-		Deck.erase(Deck.begin());
-	}
-}
-
 void updateHand()
 {
     int sz = Hand.size();
@@ -114,7 +105,7 @@ void updateHand()
 
 void drawCard()
 {   
-    if(Deck.size()!=0)
+    if(Deck.size()>0)
     {
         Hand.push_back(Deck[0]);
 	    Deck.erase(Deck.begin());
@@ -123,16 +114,41 @@ void drawCard()
 
 void shuffleDeck()
 {
+    Deck = {
+    Card(startPos_x, startPos_y, 1, 1, 2, TouchofDeath, Adder),
+    Card(startPos_x, startPos_y, 1, 1, 0, None, Bee),
+    Card(startPos_x, startPos_y, 1, 1, 0, None, Bee),
+    Card(startPos_x, startPos_y, 1, 2, 1, MightyLeap, Bullfrog),
+    Card(startPos_x, startPos_y, 2, 1, 0, None, Coyote),
+    Card(startPos_x, startPos_y, 1, 1, 0, None, Geck),
+    Card(startPos_x, startPos_y, 1, 1, 0, None, Geck),
+    Card(startPos_x, startPos_y, 4, 6, 3, None, Grizzly),
+    Card(startPos_x, startPos_y, 3, 1, 2, Airborne, Hawk),
+    Card(startPos_x, startPos_y, 0, 1, 0, None, Rabbit),
+    Card(startPos_x, startPos_y, 0, 1, 0, None, Rabbit),
+    Card(startPos_x, startPos_y, 2, 3, 2, Airborne, Raven),
+    Card(startPos_x, startPos_y, 1, 6, 2, None, RiverSnapper),
+    Card(startPos_x, startPos_y, 0, 1, 0, None, Squirrel),
+    Card(startPos_x, startPos_y, 0, 1, 0, None, Squirrel),
+    Card(startPos_x, startPos_y, 1, 2, 1, None, Stoat),
+    Card(startPos_x, startPos_y, 3, 6, 1, None, Undeadcat),
+    Card(startPos_x, startPos_y, 7, 7, 4, None, Urayuli),
+    Card(startPos_x, startPos_y, 3, 2, 2, None, Wolf)
+    };
     unsigned randSeed = std::chrono::system_clock::now().time_since_epoch().count();
     std::shuffle(std::begin(Deck), std::end(Deck), std::default_random_engine(randSeed));
 }
 
-void set_OwaitSlot()
+void getCard()
 {
-    for(int i=0;i<4;i++)
+    Hand = {};
+    if(Deck.size()>0)
     {
-        OwaitSlot[i].w /= 2;
-        OwaitSlot[i].h /= 2;
+        for(int i = 0;i < 5;i++) // number of start card
+        {
+            Hand.push_back(Deck[0]);
+            Deck.erase(Deck.begin());
+        }
     }
 }
 
@@ -153,5 +169,29 @@ void loadLevel(int level)
             {
                 ORow[i].push_back(Card(397+i*OSstartPos_x_Step, OSstartPos_y, 1, 2, 1, None, Stoat));
             }
+            break;
+        case 1:
+            for(int i=0;i<4;i++)
+            {
+                ORow[i].push_back(Card(397+i*OSstartPos_x_Step, OSstartPos_y, 0, 3, 0, MightyLeap, GrandFir));
+            }
+            for(int i=0;i<4;i++)
+            {
+                ORow[i].push_back(Card(397+i*OSstartPos_x_Step, OSstartPos_y, 3, 6, 1, None, Undeadcat));
+            }
+            break;
+        case 2:
+            for(int i=0;i<4;i++)
+            {
+                ORow[i].push_back(Card(397+i*OSstartPos_x_Step, OSstartPos_y, 0, 3, 0, MightyLeap, GrandFir));
+            }
+            for(int i=0;i<4;i++)
+            {
+                ORow[i].push_back(Card(397+i*OSstartPos_x_Step, OSstartPos_y, 3, 2, 2, None, Wolf));
+            }
+            break;
+        default:
+            break;
+        
     }
 }

@@ -1,6 +1,7 @@
 #pragma once
 #include"Math.h"
 #include"Cards.h"
+#include"User.h"
 
 class Slot
 {
@@ -17,9 +18,5 @@ public:
         pos.y = _y;
     }
     void handleEvent(SDL_Event* e, Card _sCard);
+    static void battle(Slot& Attack, Slot& Defend, User& P1, User& P2);
 };
-
-// Slot S1(400, 328);
-// Slot S2(515, 328);
-// Slot S3(630, 328);
-// Slot S4(744, 328);

@@ -18,3 +18,29 @@ void Slot::handleEvent(SDL_Event* e, Card _sCard)
         }
     }
 }
+
+void Slot::battle(Slot& Attack, Slot& Defend, User& P1, User& P2)
+{
+    if(!Attack.isEmpty)
+    {
+        if(Defend.isEmpty)
+        {
+            P2.DmgTaken -= Attack.sCard.ATK;
+        }
+        else
+        {
+            if(Attack.sCard.Ability == Airborne && Defend.sCard.Ability != MightyLeap)
+            {
+                P2.DmgTaken -= Attack.sCard.ATK;
+            }
+            else if(Attack.sCard.Ability == TouchofDeath)
+            {
+                Defend.sCard.HP = 0;
+            }
+            else
+            {
+                Defend.sCard.HP -= Attack.sCard.ATK;
+            }
+        }
+    }
+}
