@@ -56,14 +56,16 @@ bool init()
 bool SDLinit = init();
 
 // Texture
-SDL_Texture* IGmap = window.loadTexture("res/gfx/IGmap_Resized.jpg");
+SDL_Texture* IGmap = window.loadTexture("res/gfx/IGmap.jpg");
 SDL_Texture* IGtitleScreen = window.loadTexture("res/gfx/IGtitleScreen.png");
+SDL_Texture* IGpointer = window.loadTexture("res/gfx/IGpointer.png");
 
 // Sound
 Mix_Chunk* advanceTitleScreen = Mix_LoadWAV("res/sfx/titlescreenplay.wav");
 Mix_Chunk* click = Mix_LoadWAV("res/sfx/mouseclick.mp3");
 Mix_Chunk* titleScreenMusic = Mix_LoadWAV("res/sfx/titleScreenMusic.mp3");
 Mix_Chunk* ErrorSFX = Mix_LoadWAV("res/sfx/Error.mp3");
+Mix_Chunk* switchSFX = Mix_LoadWAV("res/sfx/switch.mp3");
 
 // Color
 SDL_Color white = { 255, 255, 255 };
@@ -104,11 +106,15 @@ bool setWin = false;
 bool S_battle_over[4] = {bool(false), bool(false), bool(false), bool(false)};
 bool OS_battle_over[4] = {bool(false), bool(false), bool(false), bool(false)};
 
+// pointer
+Pointer p_pointer(237 , 261, IGpointer);
+
 void graphic()
 {
 	window.clear();
 	window.renderBG(0, 0, IGmap);
 
+	// hand card
 	for(int i=0;i<Hand.size();i++)
 	{
 		window.renderCard(Hand[i]);
@@ -129,6 +135,7 @@ void graphic()
 		}
 	}
 
+	// my card
 	for(int j=0;j<S.size();j++)
 	{
 		if(!S[j].isEmpty)
@@ -138,6 +145,7 @@ void graphic()
 		}
 	}
 
+	// opponent card
 	for(int i=0;i<OSlot.size();i++)
 	{
 		if(!OSlot[i].isEmpty)
@@ -147,6 +155,7 @@ void graphic()
 		}
 	}
 
+	// opponent wait card
 	for(int i=0;i<OSlot.size();i++)
 	{
 		if(!OwaitSlot[i].isEmpty)
@@ -154,6 +163,9 @@ void graphic()
 			window.renderWaitCard(OwaitSlot[i].sCard);
 		}
 	}
+
+	// pointer
+	window.renderPointer(p_pointer);
 
 	window.display();
 }
@@ -246,6 +258,25 @@ void update()
 			setWin = false;
 		}
 
+		// push opponent card up
+		for(int i=0;i<4;i++)
+		{
+			if(OwaitSlot[i].isEmpty && ORow[i].size()!=0)
+			{
+				OwaitSlot[i].sCard = ORow[i].front();
+				ORow[i].erase(ORow[i].begin());
+				OwaitSlot[i].sCard.target = OwaitSlot[i].pos;
+				OwaitSlot[i].isEmpty = false;
+			}
+			if(OSlot[i].isEmpty && !OwaitSlot[i].isEmpty)
+			{
+				OSlot[i].sCard = OwaitSlot[i].sCard;
+				OSlot[i].sCard.target = OSlot[i].pos;
+				OSlot[i].isEmpty = false;
+				OwaitSlot[i].isEmpty = true;
+			}
+		}
+
 		if(S_battle_over[0] && S_battle_over[1] && S_battle_over[2] && S_battle_over[3])
 		{
 			for(int i=0;i<4;i++)
@@ -276,7 +307,18 @@ void update()
 		}
 	}
 
-	dmgGap = Player.DmgTaken - Bot.DmgTaken;
+	if(dmgGap > Player.DmgTaken - Bot.DmgTaken) // try to set condition && target = pos
+	{
+		dmgGap--;
+		Mix_PlayChannel(-1, switchSFX, 0);
+	}
+	if(dmgGap < Player.DmgTaken - Bot.DmgTaken)
+	{
+		dmgGap++;
+		Mix_PlayChannel(-1, switchSFX, 0);
+	}
+	p_pointer.updateTarget(dmgGap);
+	p_pointer.update(deltaTime);
 	if(dmgGap >= 5)
 	{
 		level_over = true;

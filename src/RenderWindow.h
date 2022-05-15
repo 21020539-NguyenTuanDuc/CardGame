@@ -5,6 +5,7 @@
 
 #include "Entity.h"
 #include "Cards.h"
+#include "Pointer.h"
 
 const int Height = 700;
 const int Width = 1245;
@@ -28,6 +29,7 @@ public:
 	void renderWaitCard(Card& p_card);
 	void renderCardStat(Card& p_card, TTF_Font* font);
 	void renderCardRip(Card& p_card, int cnt);
+	void renderPointer(Pointer& p_pointer);
 private:
 	SDL_Window* window;
 };

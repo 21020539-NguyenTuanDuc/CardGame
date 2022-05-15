@@ -258,3 +258,14 @@ void RenderWindow::renderCardRip(Card& p_card, int cnt)
 
 	SDL_RenderCopy(renderer, spriteSheet, &gSpriteClips[cnt], &dst);
 }
+
+void RenderWindow::renderPointer(Pointer& p_pointer)
+{
+	SDL_Rect dst;
+	dst.w = 19;
+	dst.h = 18;
+	dst.x = p_pointer.pos.x; // 23 = distance between each
+	dst.y = p_pointer.pos.y;
+
+	SDL_RenderCopy(renderer, p_pointer.pointerTex, NULL, &dst);
+}
