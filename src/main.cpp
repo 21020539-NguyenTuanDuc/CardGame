@@ -114,6 +114,9 @@ void graphic()
 	window.clear();
 	window.renderBG(0, 0, IGmap);
 
+	window.renderDmgTaken(Player.DmgTaken, Bot.DmgTaken, pixelfont24);
+	window.renderDeckSize(Deck, pixelfont24);
+
 	// hand card
 	for(int i=0;i<Hand.size();i++)
 	{
@@ -307,24 +310,24 @@ void update()
 		}
 	}
 
-	if(dmgGap > Player.DmgTaken - Bot.DmgTaken) // try to set condition && target = pos
+	if(dmgGap > Bot.DmgTaken - Player.DmgTaken)
 	{
 		dmgGap--;
 		Mix_PlayChannel(-1, switchSFX, 0);
 	}
-	if(dmgGap < Player.DmgTaken - Bot.DmgTaken)
+	if(dmgGap < Bot.DmgTaken - Player.DmgTaken)
 	{
 		dmgGap++;
 		Mix_PlayChannel(-1, switchSFX, 0);
 	}
 	p_pointer.updateTarget(dmgGap);
 	p_pointer.update(deltaTime);
-	if(dmgGap >= 5)
+	if(dmgGap <= -5)
 	{
 		level_over = true;
 		setWin = true;
 	}
-	if(dmgGap <= -5)
+	if(dmgGap >= 5)
 	{
 		level_over = true;
 		setWin = false;

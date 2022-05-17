@@ -25,13 +25,13 @@ void Slot::battle(Slot& Attack, Slot& Defend, User& P1, User& P2)
     {
         if(Defend.isEmpty)
         {
-            P2.DmgTaken -= Attack.sCard.ATK;
+            P2.DmgTaken += Attack.sCard.ATK;
         }
         else
         {
             if(Attack.sCard.Ability == Airborne && Defend.sCard.Ability != MightyLeap)
             {
-                P2.DmgTaken -= Attack.sCard.ATK;
+                P2.DmgTaken += Attack.sCard.ATK;
             }
             else if(Attack.sCard.Ability == TouchofDeath)
             {

@@ -269,3 +269,16 @@ void RenderWindow::renderPointer(Pointer& p_pointer)
 
 	SDL_RenderCopy(renderer, p_pointer.pointerTex, NULL, &dst);
 }
+
+void RenderWindow::renderDmgTaken(int dmgA, int dmgB, TTF_Font* font)
+{
+	SDL_Color white = { 255, 255, 255 };
+	renderText(161, 403, std::to_string(dmgA), font, white);
+	renderText(334, 403, std::to_string(dmgB), font, white);
+}
+
+void RenderWindow::renderDeckSize(std::vector<Card>& Deck, TTF_Font* font)
+{
+	SDL_Color white = { 255, 255, 255 };
+	renderText(1084, 480, std::to_string(Deck.size()), font ,white);
+}
