@@ -100,7 +100,7 @@ bool level_over = true;
 int turn = 0;
 bool turn_over = false;
 int dmgGap = 0;
-bool setWin = false;
+bool setWin = true;
 
 // battle setting
 bool S_battle_over[4] = {bool(false), bool(false), bool(false), bool(false)};
@@ -108,6 +108,9 @@ bool OS_battle_over[4] = {bool(false), bool(false), bool(false), bool(false)};
 
 // pointer
 Pointer p_pointer(237 , 261, IGpointer);
+
+// penalty for summon
+int sumPen = 0;
 
 void graphic()
 {
@@ -234,6 +237,8 @@ void update()
 
 	if(turn_over)
 	{
+		sumPen = 0;
+
 		for(int i=0;i<4;i++)
 		{
 			if(!S_battle_over[i])
@@ -322,12 +327,12 @@ void update()
 	}
 	p_pointer.updateTarget(dmgGap);
 	p_pointer.update(deltaTime);
-	if(dmgGap <= -5)
+	if(dmgGap >= 5)
 	{
 		level_over = true;
 		setWin = true;
 	}
-	if(dmgGap >= 5)
+	if(dmgGap <= -5)
 	{
 		level_over = true;
 		setWin = false;
@@ -342,12 +347,13 @@ void update()
 			OSlot[i].isEmpty = true;
 			S[i].isEmpty = true;
 		}
-		if(setWin = true) level++;
+		if(setWin == true) level++;
 		loadLevel(level);
 		shuffleDeck();
 		getCard();
 		Player.DmgTaken = 0;
 		Bot.DmgTaken = 0;
+		sumPen = 0;
 		turn = 0;
 		level_over = false;
 	}
@@ -393,6 +399,9 @@ void update()
 							S[j].isEmpty = false;
 							destroyedCard = S[j].sCard;
 							Hand.erase(Hand.begin()+i);
+							Player.DmgTaken += S[j].sCard.Cost;
+							Player.DmgTaken += sumPen;
+							sumPen++;
 						}
 						else Mix_PlayChannel(-1, ErrorSFX, 0);
 					}	
