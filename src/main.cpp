@@ -119,6 +119,7 @@ void graphic()
 
 	window.renderDmgTaken(Player.DmgTaken, Bot.DmgTaken, pixelfont24);
 	window.renderDeckSize(Deck, pixelfont24);
+	window.renderSummonPenalty(sumPen, pixelfont24);
 
 	// hand card
 	for(int i=0;i<Hand.size();i++)

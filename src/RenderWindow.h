@@ -32,6 +32,7 @@ public:
 	void renderPointer(Pointer& p_pointer);
 	void renderDmgTaken(int dmgA, int dmgB, TTF_Font* font);
 	void renderDeckSize(std::vector<Card>& Deck, TTF_Font* font);
+	void renderSummonPenalty(int &sumPen, TTF_Font* font);
 private:
 	SDL_Window* window;
 };

@@ -282,3 +282,9 @@ void RenderWindow::renderDeckSize(std::vector<Card>& Deck, TTF_Font* font)
 	SDL_Color white = { 255, 255, 255 };
 	renderText(1084, 480, std::to_string(Deck.size()), font ,white);
 }
+
+void RenderWindow::renderSummonPenalty(int& sumPen, TTF_Font* font)
+{
+	SDL_Color black = { 0, 0, 0};
+	renderText(882, 84, "Summon Penalty:  "  + std::to_string(sumPen) + "  x", font, black);
+}
