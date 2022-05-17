@@ -116,8 +116,8 @@ void shuffleDeck()
 {
     Deck = {
     Card(startPos_x, startPos_y, 1, 1, 2, TouchofDeath, Adder),
-    Card(startPos_x, startPos_y, 1, 1, 0, None, Bee),
-    Card(startPos_x, startPos_y, 1, 1, 0, None, Bee),
+    Card(startPos_x, startPos_y, 1, 1, 0, Airborne, Bee),
+    Card(startPos_x, startPos_y, 1, 1, 0, Airborne, Bee),
     Card(startPos_x, startPos_y, 1, 2, 1, MightyLeap, Bullfrog),
     Card(startPos_x, startPos_y, 2, 1, 0, None, Coyote),
     Card(startPos_x, startPos_y, 1, 1, 0, None, Geck),

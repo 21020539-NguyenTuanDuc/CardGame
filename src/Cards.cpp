@@ -3,10 +3,7 @@
 
 #include<iostream>
 
-Mix_Chunk* _click = Mix_LoadWAV("res/sfx/mouseclick.mp3");
-
-void Card::Battle(Card& Attacker, Card& Defender, int& Turn){
-}
+Mix_Chunk* clickSFX = Mix_LoadWAV("res/sfx/mouseclick.mp3");
 
 void Card::moveUp()
 {
@@ -62,13 +59,27 @@ void Card::handleEvent(SDL_Event* e)
         {
             if(isUp == false)
             {
-                Mix_PlayChannel(-1, _click, 0);
+                Mix_PlayChannel(-1, clickSFX, 0);
                 moveUp();
             }
         }
         else
         {
             moveDown();
+        }
+    }
+}
+
+void Card::handleBigScreenEvent(SDL_Event*e, Card& bigCard)
+{
+    if(e->type == SDL_MOUSEBUTTONDOWN)
+    {
+        //Get mouse pos
+        int x, y;
+        SDL_GetMouseState( &x, &y );
+        if(x >= pos.x && x <= pos.x + card_w && y >= pos.y && y <= pos.y + card_h)
+        {
+            bigCard.cardTexture = cardTexture;
         }
     }
 }

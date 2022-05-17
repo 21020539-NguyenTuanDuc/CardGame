@@ -17,6 +17,9 @@ public:
         pos.x = _x;
         pos.y = _y;
     }
-    void handleEvent(SDL_Event* e, Card _sCard);
     static void battle(Slot& Attack, Slot& Defend, User& P1, User& P2);
+    void battleUP();
+    void battleDOWN();
+    void slotUpdate();
+    bool checkPos();
 };

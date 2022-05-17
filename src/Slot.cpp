@@ -1,24 +1,5 @@
 #include "Slot.h"
 
-
-void Slot::handleEvent(SDL_Event* e, Card _sCard)
-{
-    //If mouse event happened
-    if(e->type == SDL_MOUSEBUTTONDOWN )
-    {
-        //Get mouse pos
-        int x, y;
-        SDL_GetMouseState( &x, &y );
-        if(isEmpty == true)
-        {
-            if(x >= pos.x && x <= pos.x + card_w && y >= pos.y && y <= pos.y + card_h)
-            {
-                isEmpty = false;
-            }
-        }
-    }
-}
-
 void Slot::battle(Slot& Attack, Slot& Defend, User& P1, User& P2)
 {
     if(!Attack.isEmpty)
@@ -43,4 +24,25 @@ void Slot::battle(Slot& Attack, Slot& Defend, User& P1, User& P2)
             }
         }
     }
+}
+
+void Slot::battleUP()
+{
+    sCard.target.y -= 30;
+}
+
+void Slot::battleDOWN()
+{
+    sCard.target.y += 30;
+}
+
+void Slot::slotUpdate()
+{
+    if(sCard.pos.y == sCard.target.y && sCard.pos.y != pos.y) sCard.target.y = pos.y;
+}
+
+bool Slot::checkPos()
+{
+    if(sCard.pos.x == sCard.target.y && sCard.pos.y == sCard.target.y) return true;
+    else return false;
 }

@@ -112,6 +112,9 @@ Pointer p_pointer(237 , 261, IGpointer);
 // penalty for summon
 int sumPen = 0;
 
+// big screen card
+Card bigCard;
+
 void graphic()
 {
 	window.clear();
@@ -120,6 +123,7 @@ void graphic()
 	window.renderDmgTaken(Player.DmgTaken, Bot.DmgTaken, pixelfont24);
 	window.renderDeckSize(Deck, pixelfont24);
 	window.renderSummonPenalty(sumPen, pixelfont24);
+	window.renderBigCard(bigCard);
 
 	// hand card
 	for(int i=0;i<Hand.size();i++)
@@ -242,9 +246,10 @@ void update()
 
 		for(int i=0;i<4;i++)
 		{
-			if(!S_battle_over[i])
+			if(!S_battle_over[i] && isDestroyed == false)
 			{
 				Slot::battle(S[i], OSlot[i], Player, Bot);
+				S[i].battleUP(); // move up
 				S_battle_over[i] = true;
 				if(OSlot[i].sCard.HP <= 0 && OSlot[i].isEmpty == false)
 				{
@@ -268,21 +273,24 @@ void update()
 		}
 
 		// push opponent card up
-		for(int i=0;i<4;i++)
+		if(isDestroyed == false)
 		{
-			if(OwaitSlot[i].isEmpty && ORow[i].size()!=0)
+			for(int i=0;i<4;i++)
 			{
-				OwaitSlot[i].sCard = ORow[i].front();
-				ORow[i].erase(ORow[i].begin());
-				OwaitSlot[i].sCard.target = OwaitSlot[i].pos;
-				OwaitSlot[i].isEmpty = false;
-			}
-			if(OSlot[i].isEmpty && !OwaitSlot[i].isEmpty)
-			{
-				OSlot[i].sCard = OwaitSlot[i].sCard;
-				OSlot[i].sCard.target = OSlot[i].pos;
-				OSlot[i].isEmpty = false;
-				OwaitSlot[i].isEmpty = true;
+				if(OwaitSlot[i].isEmpty && ORow[i].size()!=0)
+				{
+					OwaitSlot[i].sCard = ORow[i].front();
+					ORow[i].erase(ORow[i].begin());
+					OwaitSlot[i].sCard.target = OwaitSlot[i].pos;
+					OwaitSlot[i].isEmpty = false;
+				}
+				if(OSlot[i].isEmpty && !OwaitSlot[i].isEmpty)
+				{
+					OSlot[i].sCard = OwaitSlot[i].sCard;
+					OSlot[i].sCard.target = OSlot[i].pos;
+					OSlot[i].isEmpty = false;
+					OwaitSlot[i].isEmpty = true;
+				}
 			}
 		}
 
@@ -290,9 +298,10 @@ void update()
 		{
 			for(int i=0;i<4;i++)
 			{
-				if(!OS_battle_over[i])
+				if(!OS_battle_over[i] && isDestroyed == false)
 				{
 					Slot::battle(OSlot[i], S[i], Bot, Player);
+					OSlot[i].battleDOWN(); // move down
 					OS_battle_over[i] = true;
 					if(S[i].sCard.HP <= 0 && S[i].isEmpty == false)
 					{
@@ -307,7 +316,7 @@ void update()
 		if(S_battle_over[0] && S_battle_over[1] && S_battle_over[2] && S_battle_over[3] && OS_battle_over[0] && OS_battle_over[1] && OS_battle_over[2] && OS_battle_over[3])
 		{
 			turn_over = false;
-			drawCard();
+			if(Hand.size()<10) drawCard();
 			for(int i=0;i<4;i++)
 			{
 				S_battle_over[i] = false;
@@ -355,6 +364,7 @@ void update()
 		Player.DmgTaken = 0;
 		Bot.DmgTaken = 0;
 		sumPen = 0;
+		bigCard.cardTexture = NULL;
 		turn = 0;
 		level_over = false;
 	}
@@ -409,6 +419,15 @@ void update()
 				}
 				Hand[i].handleEvent(&event);
 			}
+			for(int i=0;i<Hand.size();i++)
+			{
+				Hand[i].handleBigScreenEvent(&event, bigCard);
+			}
+			for(int i=0;i<4;i++)
+			{
+				S[i].sCard.handleBigScreenEvent(&event, bigCard);
+				OSlot[i].sCard.handleBigScreenEvent(&event, bigCard);
+			}
 			if(Mouse_x >= next.pos.x && Mouse_x <= next.pos.x + next.w && Mouse_y >= next.pos.y && Mouse_y <= next.pos.y + next.h && turn_over == false)
 			{
 				Mix_PlayChannel(-1, advanceTitleScreen, 0);
@@ -430,6 +449,7 @@ void update()
 		if(!S[j].isEmpty)
 		{
 			S[j].sCard.update(deltaTime);
+			S[j].slotUpdate();
 		}
 	}
 
@@ -438,6 +458,7 @@ void update()
 		if(!OSlot[i].isEmpty)
 		{
 			OSlot[i].sCard.update(deltaTime);
+			OSlot[i].slotUpdate();
 		}
 		if(!OwaitSlot[i].isEmpty)
 		{

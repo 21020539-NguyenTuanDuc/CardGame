@@ -288,3 +288,13 @@ void RenderWindow::renderSummonPenalty(int& sumPen, TTF_Font* font)
 	SDL_Color black = { 0, 0, 0};
 	renderText(882, 84, "Summon Penalty:  "  + std::to_string(sumPen) + "  x", font, black);
 }
+
+void RenderWindow::renderBigCard(Card& bigCard)
+{
+	SDL_Rect dst;
+	dst.x = 871;
+	dst.y = 102;
+	dst.w = 258;
+	dst.h = 348;
+	SDL_RenderCopy(renderer, bigCard.cardTexture, NULL, &dst);
+}

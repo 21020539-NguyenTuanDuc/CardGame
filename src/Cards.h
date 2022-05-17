@@ -52,10 +52,9 @@ public:
         Cost = 0;
         Ability = 0;
     }
-    static void Battle(Card& Attacker, Card& Defender, int& Turn);
-    static void Destroy(Card& destroyedCard){};
     void moveUp();
     void moveDown();
     void update(int deltaTime);
     void handleEvent(SDL_Event* e);
+    void handleBigScreenEvent(SDL_Event* e, Card& bigCard);
 };
