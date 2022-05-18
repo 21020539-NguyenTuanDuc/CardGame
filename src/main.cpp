@@ -55,10 +55,23 @@ bool init()
 
 bool SDLinit = init();
 
+//Button
+Button next(129, 161, 236, 90);
+Button nextWin(289, 473, 214, 83);
+Button retry(289, 473, 214, 83);
+Button returnMenu(691, 473, 214, 83);
+Button playNow(543, 388, 159, 54);
+Button loadLevelButton(543, 458, 159, 54);
+Button rules(543, 528, 159, 54);
+Button quitMenu(543, 598, 159, 54);
+
 // Texture
 SDL_Texture* IGmap = window.loadTexture("res/gfx/IGmap.jpg");
 SDL_Texture* IGtitleScreen = window.loadTexture("res/gfx/IGtitleScreen.png");
 SDL_Texture* IGpointer = window.loadTexture("res/gfx/IGpointer.png");
+SDL_Texture* levelWin = window.loadTexture("res/gfx/levelWin.jpg");
+SDL_Texture* levelLose = window.loadTexture("res/gfx/levelLose.jpg");
+SDL_Texture* IGmenu = window.loadTexture("res/gfx/IGmenu.jpg");
 
 // Sound
 Mix_Chunk* advanceTitleScreen = Mix_LoadWAV("res/sfx/titlescreenplay.wav");
@@ -87,16 +100,22 @@ bool advanceTitle = false;
 
 SDL_Event event;
 
-int state = 0; //0 = title screen, 1 = game, 2 = end screen, 3 = levelWin, 4 = levelLose
+int state = 0; //0 = title screen, 1 = menu, 2 = game, 3 = levelWin, 4 = levelLose
 
 // Delta Time
 Uint64 currentTick = SDL_GetPerformanceCounter();
 Uint64 lastTick = 0;
 double deltaTime = 0;
+void deltaTimeCal()
+{
+	lastTick = currentTick;
+	currentTick = SDL_GetPerformanceCounter();
+	deltaTime = (double)((currentTick - lastTick)*1000 / (double)SDL_GetPerformanceFrequency() );
+}
 
 // level setting
-int level = -1;
-bool level_over = true;
+int level = 0;
+bool level_over = false;
 int turn = 0;
 bool turn_over = false;
 int dmgGap = 0;
@@ -182,9 +201,7 @@ void graphic()
 }
 void titleScreen()
 {
-	lastTick = currentTick;
-	currentTick = SDL_GetPerformanceCounter();
-	deltaTime = (double)((currentTick - lastTick)*1000 / (double)SDL_GetPerformanceFrequency() );
+	deltaTimeCal();
 
 	if(SDL_GetTicks64() < 3000)
 	{
@@ -240,9 +257,7 @@ void titleScreen()
 
 void update()
 {
-	lastTick = currentTick;
-	currentTick = SDL_GetPerformanceCounter();
-	deltaTime = (double)((currentTick - lastTick)*1000 / (double)SDL_GetPerformanceFrequency() );
+	deltaTimeCal();
 
 	if(turn_over)
 	{
@@ -265,12 +280,12 @@ void update()
 		}
 		
 		// check win
-		if(dmgGap >= 5)
+		if(Bot.DmgTaken - Player.DmgTaken >= 5)
 		{
 			level_over = true;
 			setWin = true;
 		}
-		if(dmgGap <= -5)
+		if(Bot.DmgTaken - Player.DmgTaken <= -5)
 		{
 			level_over = true;
 			setWin = false;
@@ -281,14 +296,14 @@ void update()
 		{
 			for(int i=0;i<4;i++)
 			{
-				if(OwaitSlot[i].isEmpty && ORow[i].size()!=0)
+				if(OwaitSlot[i].isEmpty && ORow[i].size()!=0 && isDestroyed == false)
 				{
 					OwaitSlot[i].sCard = ORow[i].front();
 					ORow[i].erase(ORow[i].begin());
 					OwaitSlot[i].sCard.target = OwaitSlot[i].pos;
 					OwaitSlot[i].isEmpty = false;
 				}
-				if(OSlot[i].isEmpty && !OwaitSlot[i].isEmpty)
+				if(OSlot[i].isEmpty && !OwaitSlot[i].isEmpty && isDestroyed == false)
 				{
 					OSlot[i].sCard = OwaitSlot[i].sCard;
 					OSlot[i].sCard.target = OSlot[i].pos;
@@ -352,25 +367,10 @@ void update()
 		setWin = false;
 	}
 
-	if(level_over == true)
+	if(level_over == true && isDestroyed == false)
 	{
-		// Reset field
-		for(int i=0;i<4;i++)
-		{
-			OwaitSlot[i].isEmpty = true;
-			OSlot[i].isEmpty = true;
-			S[i].isEmpty = true;
-		}
-		if(setWin == true) level++;
-		loadLevel(level);
-		shuffleDeck();
-		getCard();
-		Player.DmgTaken = 0;
-		Bot.DmgTaken = 0;
-		sumPen = 0;
-		bigCard.cardTexture = NULL;
-		turn = 0;
-		level_over = false;
+		if(setWin == true) state = 3;
+		else state = 4;
 	}
 
 	// push opponent card up
@@ -432,7 +432,7 @@ void update()
 				S[i].sCard.handleBigScreenEvent(&event, bigCard);
 				OSlot[i].sCard.handleBigScreenEvent(&event, bigCard);
 			}
-			if(Mouse_x >= next.pos.x && Mouse_x <= next.pos.x + next.w && Mouse_y >= next.pos.y && Mouse_y <= next.pos.y + next.h && turn_over == false)
+			if(next.handleButtonEvent(&event) && turn_over == false)
 			{
 				Mix_PlayChannel(-1, advanceTitleScreen, 0);
 				turn_over = true;
@@ -472,34 +472,140 @@ void update()
 
 }
 
-void levelWin()
+void levelWon()
 {
+	window.clear();
+	window.renderBG(0, 0, levelWin);
+	deltaTimeCal();
+	while (SDL_PollEvent(&event))
+	{
+		switch(event.type)
+		{
+		case SDL_QUIT:
+			gameRunning = false;
+			break;
+		case SDL_MOUSEBUTTONDOWN:
+			if(nextWin.handleButtonEvent(&event)) // need soundFX for button
+			{
+				for(int i=0;i<4;i++)
+				{
+					OwaitSlot[i].isEmpty = true;
+					OSlot[i].isEmpty = true;
+					S[i].isEmpty = true;
+				}
+				level++;
+				loadLevel(level);
+				shuffleDeck();
+				getCard();
+				Player.DmgTaken = 0;
+				Bot.DmgTaken = 0;
+				sumPen = 0;
+				bigCard.cardTexture = NULL;
+				turn = 0;
+				level_over = false;
+				state = 2;
+			}
+			if(returnMenu.handleButtonEvent(&event)) state = 1;
+		}
+	}
+	window.display();
 }
 
-void levelLose(){}
+void levelLost()
+{
+	window.clear();
+	window.renderBG(0, 0, levelLose);
+	deltaTimeCal();
+	while (SDL_PollEvent(&event))
+	{
+		switch(event.type)
+		{
+		case SDL_QUIT:
+			gameRunning = false;
+			break;
+		case SDL_MOUSEBUTTONDOWN:
+			if(nextWin.handleButtonEvent(&event)) // need soundFX for button
+			{
+				for(int i=0;i<4;i++)
+				{
+					OwaitSlot[i].isEmpty = true;
+					OSlot[i].isEmpty = true;
+					S[i].isEmpty = true;
+				}
+				loadLevel(level);
+				shuffleDeck();
+				getCard();
+				Player.DmgTaken = 0;
+				Bot.DmgTaken = 0;
+				sumPen = 0;
+				bigCard.cardTexture = NULL;
+				turn = 0;
+				level_over = false;
+				state = 2;
+			}
+			if(returnMenu.handleButtonEvent(&event)) state = 1;
+		}
+	}
+	window.display();
+}
+
+void menu()
+{
+	window.clear();
+	window.renderBG(0, 0, IGmenu);
+	deltaTimeCal();
+	while (SDL_PollEvent(&event))
+	{
+		switch(event.type)
+		{
+		case SDL_QUIT:
+			gameRunning = false;
+			break;
+		case SDL_MOUSEBUTTONDOWN:
+			if(playNow.handleButtonEvent(&event))
+			{
+				state = 2;
+				level = 0;
+			}
+			// if(loadLevel.handleButtonEvent(&event))
+			// if(rules.handleButtonEvent(&event))
+			if(quitMenu.handleButtonEvent(&event)) gameRunning = false;
+			break;
+		}
+	}
+	window.display();
+}
 
 void game()
 {
 	if(state == 0){
 		titleScreen();
 	}
+	else if(state == 1)
+	{
+		menu();
+	}
+	else if(state == 2)
+	{
+		update();
+		graphic();
+	}
 	else if(state == 3)
 	{
-		levelWin();
+		levelWon();
 	}
 	else if(state == 4)
 	{
-		levelLose();
-	}
-	else{
-		update();
-		graphic();
+		levelLost();
 	}
 }
 
 
 int main( int argc, char* args[] )
 {
+	shuffleDeck();
+	getCard();
+	loadLevel(level);
 	while(gameRunning){
 		game();
 	}

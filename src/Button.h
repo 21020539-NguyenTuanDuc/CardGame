@@ -1,5 +1,6 @@
 #pragma once
 #include"Math.h"
+#include <SDL2/SDL.h>
 
 class Button
 {
@@ -16,6 +17,5 @@ public:
         w = _w;
         h = _h;
     }
+    bool handleButtonEvent(SDL_Event* e);
 };
-
-Button next(129, 161, 236, 90);

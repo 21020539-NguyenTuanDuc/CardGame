@@ -40,9 +40,3 @@ void Slot::slotUpdate()
 {
     if(sCard.pos.y == sCard.target.y && sCard.pos.y != pos.y) sCard.target.y = pos.y;
 }
-
-bool Slot::checkPos()
-{
-    if(sCard.pos.x == sCard.target.y && sCard.pos.y == sCard.target.y) return true;
-    else return false;
-}
