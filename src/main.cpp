@@ -87,7 +87,7 @@ bool advanceTitle = false;
 
 SDL_Event event;
 
-int state = 1; //0 = title screen, 1 = game, 2 = end screen
+int state = 0; //0 = title screen, 1 = game, 2 = end screen, 3 = levelWin, 4 = levelLose
 
 // Delta Time
 Uint64 currentTick = SDL_GetPerformanceCounter();
@@ -182,56 +182,60 @@ void graphic()
 }
 void titleScreen()
 {
-	// if(SDL_GetTicks64() < 5000)
-	// {
-	// 	if(!title){
-	// 		Mix_PlayChannel(-1, titleScreenMusic, 5);
-	// 		title = true;
-	// 	}
-	// 	//Get our controls and events
-	// 	while (SDL_PollEvent(&event))
-	// 	{
-	// 		switch(event.type)
-	// 		{
-	// 		case SDL_QUIT:
-	// 			gameRunning = false;
-	// 			break;
-	// 		}
-	// 	}
-	// 	window.clear();
-	// 	window.renderCenter(0, 0, "NguyenTuanDuc Project", yafont32, white);
-	// 	window.display();
-	// }
-	// else
-	// {
-	// 	if(!advanceTitle)
-	// 	{
-	// 		Mix_PlayChannel(-1, advanceTitleScreen, 0);
-	// 		advanceTitle = true;
-	// 	}
+	lastTick = currentTick;
+	currentTick = SDL_GetPerformanceCounter();
+	deltaTime = (double)((currentTick - lastTick)*1000 / (double)SDL_GetPerformanceFrequency() );
 
-	// 	while (SDL_PollEvent(&event))
-	// 	{
-	// 		switch(event.type)
-	// 		{
-	// 		case SDL_QUIT:
-	// 			gameRunning = false;
-	// 			break;
-	// 		case SDL_MOUSEBUTTONDOWN:
-	// 			Mix_PlayChannel(-1, advanceTitleScreen, 0);
-	// 			state = 1;
-	// 			break;
-	// 		case SDL_KEYDOWN:
-	// 			Mix_PlayChannel(-1, advanceTitleScreen, 0);
-	// 			state = 1;
-	// 			break;	
-	// 		}
-	// 	}
+	if(SDL_GetTicks64() < 3000)
+	{
+		if(!title){
+			Mix_PlayChannel(-1, titleScreenMusic, 5);
+			title = true;
+		}
+		//Get our controls and events
+		while (SDL_PollEvent(&event))
+		{
+			switch(event.type)
+			{
+			case SDL_QUIT:
+				gameRunning = false;
+				break;
+			}
+		}
+		window.clear();
+		window.renderCenter(0, 0, "NguyenTuanDuc Project", yafont32, white);
+		window.display();
+	}
+	else
+	{
+		if(!advanceTitle)
+		{
+			Mix_PlayChannel(-1, advanceTitleScreen, 0);
+			advanceTitle = true;
+		}
 
-	// 	window.clear();
-	// 	window.renderBG(0, 0, IGtitleScreen);
-	// 	window.display();
-	// }
+		while (SDL_PollEvent(&event))
+		{
+			switch(event.type)
+			{
+			case SDL_QUIT:
+				gameRunning = false;
+				break;
+			case SDL_MOUSEBUTTONDOWN:
+				Mix_PlayChannel(-1, advanceTitleScreen, 0);
+				state = 1;
+				break;
+			case SDL_KEYDOWN:
+				Mix_PlayChannel(-1, advanceTitleScreen, 0);
+				state = 1;
+				break;	
+			}
+		}
+
+		window.clear();
+		window.renderBG(0, 0, IGtitleScreen);
+		window.display();
+	}
 }
 
 void update()
@@ -468,10 +472,24 @@ void update()
 
 }
 
+void levelWin()
+{
+}
+
+void levelLose(){}
+
 void game()
 {
 	if(state == 0){
 		titleScreen();
+	}
+	else if(state == 3)
+	{
+		levelWin();
+	}
+	else if(state == 4)
+	{
+		levelLose();
 	}
 	else{
 		update();
