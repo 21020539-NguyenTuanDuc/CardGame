@@ -1,9 +1,10 @@
 #include<SDL2/SDL.h>
 #include<SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
-#include <SDL2/SDL_mixer.h>
+#include<SDL2/SDL_ttf.h>
+#include<SDL2/SDL_mixer.h>
 #include<iostream>
 #include<vector>
+#include<fstream>
 
 #include "RenderWindow.h"
 RenderWindow window("CardGame", Width, Height);
@@ -67,6 +68,33 @@ Button quitMenu(543, 598, 159, 54);
 Button Music(61, 163, 42, 42);
 Button Speaker(61, 207, 42, 42);
 Button menuBackInstruction(4, 69, 149, 57);
+Button levelButton[10];
+void initButton()
+{
+	for(int i=0;i<5;i++)
+	{
+		levelButton[i].pos.x = 30 + i*250;
+		levelButton[i].pos.y = 277;
+		levelButton[i].w = 200;
+		levelButton[i].h = 200;
+	}
+
+	for(int i=5;i<10;i++)
+	{
+		levelButton[i].pos.x = 30 + i*250;
+		levelButton[i].pos.y = 484;
+		levelButton[i].w = 200;
+		levelButton[i].h = 200;
+	}
+}
+bool levelLock[10];
+void initLevelLock()
+{
+	for(int i=0;i<10;i++)
+	{
+		levelLock[i] = false;
+	}
+}
 
 // Texture
 SDL_Texture* IGmap = window.loadTexture("res/gfx/IGmap.jpg");
@@ -78,6 +106,7 @@ SDL_Texture* IGmenu = window.loadTexture("res/gfx/IGmenu.jpg");
 SDL_Texture* noteON = window.loadTexture("res/gfx/noteON.png");
 SDL_Texture* speakerON = window.loadTexture("res/gfx/speakerON.png");
 SDL_Texture* IGinstruction = window.loadTexture("res/gfx/IGinstruction.jpg");
+SDL_Texture* IGlevelSelect = window.loadTexture("res/gfx/IGlevelSelect.jpg");
 
 // Sound
 Mix_Chunk* buttonClick = Mix_LoadWAV("res/sfx/buttonClick.wav");
@@ -115,7 +144,7 @@ bool advanceTitle = false;
 
 SDL_Event event;
 
-int state = 0; //0 = title screen, 1 = menu, 2 = game, 3 = levelWin, 4 = levelLose, 5 = instruction
+int state = 0; //0 = title screen, 1 = menu, 2 = game, 3 = levelWin, 4 = levelLose, 5 = instruction, 6 = level select
 
 // Delta Time
 Uint64 currentTick = SDL_GetPerformanceCounter();
@@ -220,7 +249,7 @@ void graphic()
 }
 void titleScreen()
 {
-	if(SDL_GetTicks64() < 5000)
+	if(SDL_GetTicks64() < 4000)
 	{
 		if(!title){
 			Mix_PlayMusic(BGmusic, -1);
@@ -237,7 +266,7 @@ void titleScreen()
 			}
 		}
 		window.clear();
-		window.renderCenter(0, 0, "NguyenTuanDuc Project", yafont32, white);
+		window.renderCenter(0, 0, "NguyenTuanDuc", yafont32, white);
 		window.display();
 	}
 	else
@@ -649,7 +678,11 @@ void menu()
 				level_over = false;
 				state = 2;
 			}
-			// if(loadLevel.handleButtonEvent(&event))
+			if(loadLevelButton.handleButtonEvent(&event))
+			{
+				if(soundFX) Mix_PlayChannel(-1, buttonClick, 0);
+				state = 6;
+			}
 			if(rules.handleButtonEvent(&event))
 			{
 				if(soundFX) Mix_PlayChannel(-1, buttonClick, 0);
@@ -710,6 +743,55 @@ void instruction()
 	window.display();
 }
 
+void levelSelect()
+{
+	window.clear();
+	window.renderBG(0, 0, IGlevelSelect);
+	deltaTimeCal();
+
+	while (SDL_PollEvent(&event))
+	{
+		switch(event.type)
+		{
+		case SDL_QUIT:
+			gameRunning = false;
+			break;
+		case SDL_MOUSEBUTTONDOWN:
+			if(menuBackInstruction.handleButtonEvent(&event))
+			{
+				if(soundFX) Mix_PlayChannel(-1, buttonClick, 0);
+				state = 1;
+			}
+			for(int i=0;i<10;i++)
+			{
+				if(levelButton[i].handleButtonEvent(&event) && !levelLock[i])
+				{
+					if(soundFX) Mix_PlayChannel(-1, buttonClick, 0);
+					level = i;
+					for(int i=0;i<4;i++)
+					{
+						OwaitSlot[i].isEmpty = true;
+						OSlot[i].isEmpty = true;
+						S[i].isEmpty = true;
+					}
+					loadLevel(level);
+					shuffleDeck();
+					getCard();
+					Player.DmgTaken = 0;
+					Bot.DmgTaken = 0;
+					sumPen = 0;
+					bigCard.cardTexture = NULL;
+					turn = 0;
+					level_over = false;
+					state = 2;
+				}
+			}
+		}
+	}
+
+	window.display();
+}
+
 void game()
 {
 	if(state == 0){
@@ -736,11 +818,17 @@ void game()
 	{
 		instruction();
 	}
+	else if(state == 6)
+	{
+		levelSelect();
+	}
 }
 
 
 int main( int argc, char* args[] )
 {
+	initButton();
+	initLevelLock();
 	shuffleDeck();
 	getCard();
 	loadLevel(level);
