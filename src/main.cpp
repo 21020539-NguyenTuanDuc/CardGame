@@ -87,6 +87,8 @@ Mix_Chunk* switchSFX = Mix_LoadWAV("res/sfx/switch.mp3");
 Mix_Chunk* battleSFX = Mix_LoadWAV("res/sfx/battle.wav");
 Mix_Chunk* cardRip = Mix_LoadWAV("res/sfx/cardRip.wav");
 Mix_Chunk* summonSFX = Mix_LoadWAV("res/sfx/summonSFX.mp3");
+Mix_Chunk* winSFX = Mix_LoadWAV("res/sfx/winSFX.wav");
+Mix_Chunk* loseSFX = Mix_LoadWAV("res/sfx/loseSFX.wav");
 bool soundFX = true;
 
 // Music
@@ -300,11 +302,13 @@ void update()
 		{
 			level_over = true;
 			setWin = true;
+			if(soundFX) Mix_PlayChannel(-1, winSFX, 0);
 		}
 		if(Bot.DmgTaken - Player.DmgTaken <= -5)
 		{
 			level_over = true;
 			setWin = false;
+			if(soundFX) Mix_PlayChannel(-1, loseSFX, 0);
 		}
 
 		// push opponent card up
@@ -377,11 +381,13 @@ void update()
 	{
 		level_over = true;
 		setWin = true;
+		if(soundFX) Mix_PlayChannel(-1, winSFX, 0);
 	}
 	if(dmgGap <= -5)
 	{
 		level_over = true;
 		setWin = false;
+		if(soundFX) Mix_PlayChannel(-1, loseSFX, 0);
 	}
 
 	if(level_over == true && isDestroyed == false)
@@ -625,8 +631,23 @@ void menu()
 			if(playNow.handleButtonEvent(&event))
 			{
 				if(soundFX) Mix_PlayChannel(-1, buttonClick, 0);
-				state = 2;
 				level = 0;
+				for(int i=0;i<4;i++)
+				{
+					OwaitSlot[i].isEmpty = true;
+					OSlot[i].isEmpty = true;
+					S[i].isEmpty = true;
+				}
+				loadLevel(level);
+				shuffleDeck();
+				getCard();
+				Player.DmgTaken = 0;
+				Bot.DmgTaken = 0;
+				sumPen = 0;
+				bigCard.cardTexture = NULL;
+				turn = 0;
+				level_over = false;
+				state = 2;
 			}
 			// if(loadLevel.handleButtonEvent(&event))
 			if(rules.handleButtonEvent(&event))
