@@ -17,5 +17,12 @@ public:
         w = _w;
         h = _h;
     }
+    Button()
+    {
+        pos.x = 0;
+        pos.y = 0;
+        w = 0;
+        h = 0;
+    }
     bool handleButtonEvent(SDL_Event* e);
 };

@@ -1,11 +1,13 @@
 #pragma once
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
-#include <SDL2/SDL_image.h>
+#include<SDL2/SDL.h>
+#include<SDL2/SDL_ttf.h>
+#include<SDL2/SDL_image.h>
 
 #include "Entity.h"
 #include "Cards.h"
 #include "Pointer.h"
+#include "Button.h"
+
 
 const int Height = 700;
 const int Width = 1245;
@@ -37,6 +39,7 @@ public:
 	void renderSoundIcon(SDL_Texture* noteON, SDL_Texture* speakerON);
 	void renderMuteNote(bool musicFX);
 	void renderMuteSpeaker(bool soundFX);
+	void renderButtonLock(Button& tempButton, bool levelLocked, SDL_Texture* Lock);
 private:
 	SDL_Window* window;
 };

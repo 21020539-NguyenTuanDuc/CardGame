@@ -333,3 +333,17 @@ void RenderWindow::renderMuteSpeaker(bool soundFX)
 		SDL_RenderDrawLine(renderer, 61, 207, 103, 249);
 	}
 }
+
+void RenderWindow::renderButtonLock(Button& tempButton, bool levelLocked, SDL_Texture* Lock)
+{
+	if(levelLocked)
+	{
+		SDL_Rect dst;
+		dst.x = tempButton.pos.x;
+		dst.y = tempButton.pos.y;
+		dst.w = 200;
+		dst.h = 200;
+
+		SDL_RenderCopy(renderer, Lock, NULL, &dst);
+	}
+}
