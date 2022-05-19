@@ -72,13 +72,19 @@ SDL_Texture* IGpointer = window.loadTexture("res/gfx/IGpointer.png");
 SDL_Texture* levelWin = window.loadTexture("res/gfx/levelWin.jpg");
 SDL_Texture* levelLose = window.loadTexture("res/gfx/levelLose.jpg");
 SDL_Texture* IGmenu = window.loadTexture("res/gfx/IGmenu.jpg");
+SDL_Texture* noteON = window.loadTexture("res/gfx/noteON.png");
+SDL_Texture* speakerON = window.loadTexture("res/gfx/speakerON.png");
 
 // Sound
 Mix_Chunk* advanceTitleScreen = Mix_LoadWAV("res/sfx/titlescreenplay.wav");
 Mix_Chunk* click = Mix_LoadWAV("res/sfx/mouseclick.mp3");
-Mix_Chunk* titleScreenMusic = Mix_LoadWAV("res/sfx/titleScreenMusic.mp3");
 Mix_Chunk* ErrorSFX = Mix_LoadWAV("res/sfx/Error.mp3");
 Mix_Chunk* switchSFX = Mix_LoadWAV("res/sfx/switch.mp3");
+bool soundFX = true;
+
+// Music
+Mix_Music* BGmusic = Mix_LoadMUS("res/sfx/BGmusic.mp3");
+bool musicFX = true;
 
 // Color
 SDL_Color white = { 255, 255, 255 };
@@ -138,6 +144,7 @@ void graphic()
 {
 	window.clear();
 	window.renderBG(0, 0, IGmap);
+	window.renderSoundIcon(noteON, speakerON);
 
 	window.renderDmgTaken(Player.DmgTaken, Bot.DmgTaken, pixelfont24);
 	window.renderDeckSize(Deck, pixelfont24);
@@ -206,7 +213,7 @@ void titleScreen()
 	if(SDL_GetTicks64() < 3000)
 	{
 		if(!title){
-			Mix_PlayChannel(-1, titleScreenMusic, 5);
+			// Mix_PlayChannel(-1, BGmusic, 5);
 			title = true;
 		}
 		//Get our controls and events
@@ -292,7 +299,7 @@ void update()
 		}
 
 		// push opponent card up
-		if(isDestroyed == false)
+		if(isDestroyed == false && S[3].sCard.pos.y == S[3].pos.y && S[2].sCard.pos.y == S[2].pos.y && S[1].sCard.pos.y == S[1].pos.y && S[0].sCard.pos.y == S[0].pos.y)
 		{
 			for(int i=0;i<4;i++)
 			{

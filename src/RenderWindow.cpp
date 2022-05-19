@@ -298,3 +298,20 @@ void RenderWindow::renderBigCard(Card& bigCard)
 	dst.h = 348;
 	SDL_RenderCopy(renderer, bigCard.cardTexture, NULL, &dst);
 }
+
+void RenderWindow::renderSoundIcon(SDL_Texture* noteON, SDL_Texture* speakerON)
+{
+	SDL_Rect dstNote;
+	dstNote.x = 61;
+	dstNote.y = 163;
+	dstNote.w = 42;
+	dstNote.h = 42;
+	SDL_RenderCopy(renderer, noteON, NULL, &dstNote);
+
+	SDL_Rect dstSpeaker;
+	dstSpeaker.x = 61;
+	dstSpeaker.y = 207;
+	dstSpeaker.w = 42;
+	dstSpeaker.h = 42;
+	SDL_RenderCopy(renderer, speakerON, NULL, &dstSpeaker);
+}

@@ -34,6 +34,7 @@ public:
 	void renderDeckSize(std::vector<Card>& Deck, TTF_Font* font);
 	void renderSummonPenalty(int &sumPen, TTF_Font* font);
 	void renderBigCard(Card& bigCard);
+	void renderSoundIcon(SDL_Texture* noteON, SDL_Texture* speakerON);
 private:
 	SDL_Window* window;
 };
