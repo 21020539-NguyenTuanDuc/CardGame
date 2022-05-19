@@ -315,3 +315,21 @@ void RenderWindow::renderSoundIcon(SDL_Texture* noteON, SDL_Texture* speakerON)
 	dstSpeaker.h = 42;
 	SDL_RenderCopy(renderer, speakerON, NULL, &dstSpeaker);
 }
+
+void RenderWindow::renderMuteNote(bool musicFX)
+{
+	if(musicFX == false)
+	{
+		SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+		SDL_RenderDrawLine(renderer, 61, 163, 103, 205);
+	}
+}
+
+void RenderWindow::renderMuteSpeaker(bool soundFX)
+{
+	if(soundFX == false)
+	{
+		SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+		SDL_RenderDrawLine(renderer, 61, 207, 103, 249);
+	}
+}

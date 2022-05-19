@@ -35,6 +35,8 @@ public:
 	void renderSummonPenalty(int &sumPen, TTF_Font* font);
 	void renderBigCard(Card& bigCard);
 	void renderSoundIcon(SDL_Texture* noteON, SDL_Texture* speakerON);
+	void renderMuteNote(bool musicFX);
+	void renderMuteSpeaker(bool soundFX);
 private:
 	SDL_Window* window;
 };

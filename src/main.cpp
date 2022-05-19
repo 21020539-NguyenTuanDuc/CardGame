@@ -64,6 +64,9 @@ Button playNow(543, 388, 159, 54);
 Button loadLevelButton(543, 458, 159, 54);
 Button rules(543, 528, 159, 54);
 Button quitMenu(543, 598, 159, 54);
+Button Music(61, 163, 42, 42);
+Button Speaker(61, 207, 42, 42);
+Button menuBackInstruction(4, 69, 149, 57);
 
 // Texture
 SDL_Texture* IGmap = window.loadTexture("res/gfx/IGmap.jpg");
@@ -74,12 +77,16 @@ SDL_Texture* levelLose = window.loadTexture("res/gfx/levelLose.jpg");
 SDL_Texture* IGmenu = window.loadTexture("res/gfx/IGmenu.jpg");
 SDL_Texture* noteON = window.loadTexture("res/gfx/noteON.png");
 SDL_Texture* speakerON = window.loadTexture("res/gfx/speakerON.png");
+SDL_Texture* IGinstruction = window.loadTexture("res/gfx/IGinstruction.jpg");
 
 // Sound
-Mix_Chunk* advanceTitleScreen = Mix_LoadWAV("res/sfx/titlescreenplay.wav");
-Mix_Chunk* click = Mix_LoadWAV("res/sfx/mouseclick.mp3");
+Mix_Chunk* buttonClick = Mix_LoadWAV("res/sfx/buttonClick.wav");
+Mix_Chunk* click = Mix_LoadWAV("res/sfx/click.mp3");
 Mix_Chunk* ErrorSFX = Mix_LoadWAV("res/sfx/Error.mp3");
 Mix_Chunk* switchSFX = Mix_LoadWAV("res/sfx/switch.mp3");
+Mix_Chunk* battleSFX = Mix_LoadWAV("res/sfx/battle.wav");
+Mix_Chunk* cardRip = Mix_LoadWAV("res/sfx/cardRip.wav");
+Mix_Chunk* summonSFX = Mix_LoadWAV("res/sfx/summonSFX.mp3");
 bool soundFX = true;
 
 // Music
@@ -106,7 +113,7 @@ bool advanceTitle = false;
 
 SDL_Event event;
 
-int state = 0; //0 = title screen, 1 = menu, 2 = game, 3 = levelWin, 4 = levelLose
+int state = 0; //0 = title screen, 1 = menu, 2 = game, 3 = levelWin, 4 = levelLose, 5 = instruction
 
 // Delta Time
 Uint64 currentTick = SDL_GetPerformanceCounter();
@@ -145,6 +152,8 @@ void graphic()
 	window.clear();
 	window.renderBG(0, 0, IGmap);
 	window.renderSoundIcon(noteON, speakerON);
+	window.renderMuteNote(musicFX);
+	window.renderMuteSpeaker(soundFX);
 
 	window.renderDmgTaken(Player.DmgTaken, Bot.DmgTaken, pixelfont24);
 	window.renderDeckSize(Deck, pixelfont24);
@@ -160,6 +169,7 @@ void graphic()
 	// destroy card sprite
 	if(isDestroyed == true)
 	{
+		if(soundFX) Mix_PlayChannel(-1, cardRip, 0);
 		if(frameCnt<=12)
 		{
 			window.renderCardRip(destroyedCard, frameCnt);
@@ -208,12 +218,10 @@ void graphic()
 }
 void titleScreen()
 {
-	deltaTimeCal();
-
-	if(SDL_GetTicks64() < 3000)
+	if(SDL_GetTicks64() < 5000)
 	{
 		if(!title){
-			// Mix_PlayChannel(-1, BGmusic, 5);
+			Mix_PlayMusic(BGmusic, -1);
 			title = true;
 		}
 		//Get our controls and events
@@ -234,7 +242,7 @@ void titleScreen()
 	{
 		if(!advanceTitle)
 		{
-			Mix_PlayChannel(-1, advanceTitleScreen, 0);
+			Mix_PlayChannel(-1, buttonClick, 0);
 			advanceTitle = true;
 		}
 
@@ -246,11 +254,11 @@ void titleScreen()
 				gameRunning = false;
 				break;
 			case SDL_MOUSEBUTTONDOWN:
-				Mix_PlayChannel(-1, advanceTitleScreen, 0);
+				Mix_PlayChannel(-1, buttonClick, 0);
 				state = 1;
 				break;
 			case SDL_KEYDOWN:
-				Mix_PlayChannel(-1, advanceTitleScreen, 0);
+				Mix_PlayChannel(-1, buttonClick, 0);
 				state = 1;
 				break;	
 			}
@@ -276,6 +284,7 @@ void update()
 			{
 				Slot::battle(S[i], OSlot[i], Player, Bot);
 				S[i].battleUP(); // move up
+				if(soundFX) Mix_PlayChannel(-1, battleSFX, 0);
 				S_battle_over[i] = true;
 				if(OSlot[i].sCard.HP <= 0 && OSlot[i].isEmpty == false)
 				{
@@ -328,6 +337,7 @@ void update()
 				{
 					Slot::battle(OSlot[i], S[i], Bot, Player);
 					OSlot[i].battleDOWN(); // move down
+					if(soundFX) Mix_PlayChannel(-1, battleSFX, 0);
 					OS_battle_over[i] = true;
 					if(S[i].sCard.HP <= 0 && S[i].isEmpty == false)
 					{
@@ -354,12 +364,12 @@ void update()
 	if(dmgGap > Bot.DmgTaken - Player.DmgTaken)
 	{
 		dmgGap--;
-		Mix_PlayChannel(-1, switchSFX, 0);
+		if(soundFX) Mix_PlayChannel(-1, switchSFX, 0);
 	}
 	if(dmgGap < Bot.DmgTaken - Player.DmgTaken)
 	{
 		dmgGap++;
-		Mix_PlayChannel(-1, switchSFX, 0);
+		if(soundFX) Mix_PlayChannel(-1, switchSFX, 0);
 	}
 	p_pointer.updateTarget(dmgGap);
 	p_pointer.update(deltaTime);
@@ -417,6 +427,7 @@ void update()
 					{
 						if(summon(S[j], Hand[i]))
 						{
+							if(soundFX) Mix_PlayChannel(-1, summonSFX, 0);
 							if(S[j].isEmpty == false) isDestroyed = true;
 							S[j].isEmpty = false;
 							destroyedCard = S[j].sCard;
@@ -425,10 +436,13 @@ void update()
 							Player.DmgTaken += sumPen;
 							sumPen++;
 						}
-						else Mix_PlayChannel(-1, ErrorSFX, 0);
+						else
+						{
+							if(soundFX) Mix_PlayChannel(-1, ErrorSFX, 0);
+						}
 					}	
 				}
-				Hand[i].handleEvent(&event);
+				if(Hand[i].handleEvent(&event)) if(soundFX) Mix_PlayChannel(-1, click, 0);
 			}
 			for(int i=0;i<Hand.size();i++)
 			{
@@ -441,10 +455,35 @@ void update()
 			}
 			if(next.handleButtonEvent(&event) && turn_over == false)
 			{
-				Mix_PlayChannel(-1, advanceTitleScreen, 0);
+				if(soundFX) Mix_PlayChannel(-1, buttonClick, 0);
 				turn_over = true;
 				turn++;
 			}
+			if(Music.handleButtonEvent(&event))
+			{
+				if(musicFX == true)
+				{
+					musicFX = false;
+					if(soundFX) Mix_PlayChannel(-1, buttonClick, 0);
+					Mix_PauseMusic();
+				}
+				else
+				{
+					musicFX = true;
+					if(soundFX) Mix_PlayChannel(-1, buttonClick, 0);
+					Mix_ResumeMusic();
+				}
+			}
+			if(Speaker.handleButtonEvent(&event))
+			{
+				if(soundFX == false)
+				{					
+					soundFX = true;
+					if(soundFX) Mix_PlayChannel(-1, buttonClick, 0);
+				}
+				else soundFX = false;
+			}
+			break;
 		}
 	}
 
@@ -511,8 +550,13 @@ void levelWon()
 				turn = 0;
 				level_over = false;
 				state = 2;
+				if(soundFX) Mix_PlayChannel(-1, buttonClick, 0);
 			}
-			if(returnMenu.handleButtonEvent(&event)) state = 1;
+			if(returnMenu.handleButtonEvent(&event))
+			{
+				state = 1;
+				if(soundFX) Mix_PlayChannel(-1, buttonClick, 0);
+			}
 		}
 	}
 	window.display();
@@ -549,8 +593,13 @@ void levelLost()
 				turn = 0;
 				level_over = false;
 				state = 2;
+				if(soundFX) Mix_PlayChannel(-1, buttonClick, 0);
 			}
-			if(returnMenu.handleButtonEvent(&event)) state = 1;
+			if(returnMenu.handleButtonEvent(&event))
+			{
+				if(soundFX) Mix_PlayChannel(-1, buttonClick, 0);
+				state = 1;
+			}
 		}
 	}
 	window.display();
@@ -561,6 +610,10 @@ void menu()
 	window.clear();
 	window.renderBG(0, 0, IGmenu);
 	deltaTimeCal();
+	window.renderSoundIcon(noteON, speakerON);
+	window.renderMuteNote(musicFX);
+	window.renderMuteSpeaker(soundFX);
+
 	while (SDL_PollEvent(&event))
 	{
 		switch(event.type)
@@ -571,15 +624,68 @@ void menu()
 		case SDL_MOUSEBUTTONDOWN:
 			if(playNow.handleButtonEvent(&event))
 			{
+				if(soundFX) Mix_PlayChannel(-1, buttonClick, 0);
 				state = 2;
 				level = 0;
 			}
 			// if(loadLevel.handleButtonEvent(&event))
-			// if(rules.handleButtonEvent(&event))
+			if(rules.handleButtonEvent(&event))
+			{
+				if(soundFX) Mix_PlayChannel(-1, buttonClick, 0);
+				state = 5;
+			}
 			if(quitMenu.handleButtonEvent(&event)) gameRunning = false;
+			if(Music.handleButtonEvent(&event))
+			{
+				if(musicFX == true)
+				{
+					musicFX = false;
+					if(soundFX) Mix_PlayChannel(-1, buttonClick, 0);
+					Mix_PauseMusic();
+				}
+				else
+				{
+					musicFX = true;
+					if(soundFX) Mix_PlayChannel(-1, buttonClick, 0);
+					Mix_ResumeMusic();
+				}
+			}
+			if(Speaker.handleButtonEvent(&event))
+			{
+				if(soundFX == false)
+				{					
+					soundFX = true;
+					if(soundFX) Mix_PlayChannel(-1, buttonClick, 0);
+				}
+				else soundFX = false;
+			}
 			break;
 		}
 	}
+	window.display();
+}
+
+void instruction()
+{
+	window.clear();
+	window.renderBG(0, 0, IGinstruction);
+
+	while (SDL_PollEvent(&event))
+	{
+		switch(event.type)
+		{
+		case SDL_QUIT:
+			gameRunning = false;
+			break;
+		case SDL_MOUSEBUTTONDOWN:
+			if(menuBackInstruction.handleButtonEvent(&event))
+			{
+				if(soundFX) Mix_PlayChannel(-1, buttonClick, 0);
+				state = 1;
+			}
+		}
+	}
+
 	window.display();
 }
 
@@ -604,6 +710,10 @@ void game()
 	else if(state == 4)
 	{
 		levelLost();
+	}
+	else if(state == 5)
+	{
+		instruction();
 	}
 }
 

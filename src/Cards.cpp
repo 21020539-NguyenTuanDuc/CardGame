@@ -3,7 +3,7 @@
 
 #include<iostream>
 
-Mix_Chunk* clickSFX = Mix_LoadWAV("res/sfx/mouseclick.mp3");
+Mix_Chunk* clickSFX = Mix_LoadWAV("res/sfx/click.mp3");
 
 void Card::moveUp()
 {
@@ -47,7 +47,7 @@ void Card::update(int deltaTime)
     if(pos.y <= 5 + target.y && pos.y >= target.y - 5) pos.y = target.y;
 }
 
-void Card::handleEvent(SDL_Event* e)
+bool Card::handleEvent(SDL_Event* e)
 {
     //If mouse event happened
     if(e->type == SDL_MOUSEBUTTONDOWN )
@@ -58,16 +58,18 @@ void Card::handleEvent(SDL_Event* e)
         if(x >= pos.x && x <= pos.x + card_w && y >= pos.y && y <= pos.y + card_h)
         {
             if(isUp == false)
-            {
-                Mix_PlayChannel(-1, clickSFX, 0);
+            {               
                 moveUp();
+                return true;
             }
         }
         else
         {
             moveDown();
+            return false;
         }
     }
+    return false;
 }
 
 void Card::handleBigScreenEvent(SDL_Event*e, Card& bigCard)

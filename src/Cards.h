@@ -55,6 +55,6 @@ public:
     void moveUp();
     void moveDown();
     void update(int deltaTime);
-    void handleEvent(SDL_Event* e);
+    bool handleEvent(SDL_Event* e);
     void handleBigScreenEvent(SDL_Event* e, Card& bigCard);
 };
