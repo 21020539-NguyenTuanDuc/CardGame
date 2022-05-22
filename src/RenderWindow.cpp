@@ -302,15 +302,15 @@ void RenderWindow::renderBigCard(Card& bigCard)
 void RenderWindow::renderSoundIcon(SDL_Texture* noteON, SDL_Texture* speakerON)
 {
 	SDL_Rect dstNote;
-	dstNote.x = 61;
-	dstNote.y = 163;
+	dstNote.x = 1139;
+	dstNote.y = 129;
 	dstNote.w = 42;
 	dstNote.h = 42;
 	SDL_RenderCopy(renderer, noteON, NULL, &dstNote);
 
 	SDL_Rect dstSpeaker;
-	dstSpeaker.x = 61;
-	dstSpeaker.y = 207;
+	dstSpeaker.x = 1139;
+	dstSpeaker.y = 175;
 	dstSpeaker.w = 42;
 	dstSpeaker.h = 42;
 	SDL_RenderCopy(renderer, speakerON, NULL, &dstSpeaker);
@@ -321,7 +321,7 @@ void RenderWindow::renderMuteNote(bool musicFX)
 	if(musicFX == false)
 	{
 		SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-		SDL_RenderDrawLine(renderer, 61, 163, 103, 205);
+		SDL_RenderDrawLine(renderer, 1139, 129, 1181, 171);
 	}
 }
 
@@ -330,7 +330,7 @@ void RenderWindow::renderMuteSpeaker(bool soundFX)
 	if(soundFX == false)
 	{
 		SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-		SDL_RenderDrawLine(renderer, 61, 207, 103, 249);
+		SDL_RenderDrawLine(renderer, 1139, 175, 1181, 217);
 	}
 }
 

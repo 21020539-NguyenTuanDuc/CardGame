@@ -65,9 +65,10 @@ Button playNow(543, 388, 159, 54);
 Button loadLevelButton(543, 458, 159, 54);
 Button rules(543, 528, 159, 54);
 Button quitMenu(543, 598, 159, 54);
-Button Music(61, 163, 42, 42);
-Button Speaker(61, 207, 42, 42);
+Button Music(1139, 129, 42, 42);
+Button Speaker(1139, 175, 42, 42);
 Button menuBackInstruction(4, 69, 149, 57);
+Button menuBackIG(2, 438, 149, 57);
 Button levelButton[10];
 void initButton()
 {
@@ -249,7 +250,7 @@ void graphic()
 }
 void titleScreen()
 {
-	if(SDL_GetTicks64() < 4000)
+	if(SDL_GetTicks64() < 5000)
 	{
 		if(!title){
 			Mix_PlayMusic(BGmusic, -1);
@@ -266,7 +267,7 @@ void titleScreen()
 			}
 		}
 		window.clear();
-		window.renderCenter(0, 0, "NguyenTuanDuc", yafont32, white);
+		window.renderCenter(0, 0, "Inscryption", yafont32, white);
 		window.display();
 	}
 	else
@@ -494,6 +495,11 @@ void update()
 				turn_over = true;
 				turn++;
 			}
+			if(menuBackIG.handleButtonEvent(&event))
+			{
+				state = 1;
+				if(soundFX) Mix_PlayChannel(-1, buttonClick, 0);
+			}
 			if(Music.handleButtonEvent(&event))
 			{
 				if(musicFX == true)
@@ -566,7 +572,7 @@ void levelWon()
 			gameRunning = false;
 			break;
 		case SDL_MOUSEBUTTONDOWN:
-			if(nextWin.handleButtonEvent(&event)) // need soundFX for button
+			if(nextWin.handleButtonEvent(&event))
 			{
 				for(int i=0;i<4;i++)
 				{
@@ -580,6 +586,7 @@ void levelWon()
 				getCard();
 				Player.DmgTaken = 0;
 				Bot.DmgTaken = 0;
+				dmgGap = 0;
 				sumPen = 0;
 				bigCard.cardTexture = NULL;
 				turn = 0;
@@ -623,6 +630,7 @@ void levelLost()
 				getCard();
 				Player.DmgTaken = 0;
 				Bot.DmgTaken = 0;
+				dmgGap = 0;
 				sumPen = 0;
 				bigCard.cardTexture = NULL;
 				turn = 0;
@@ -672,6 +680,7 @@ void menu()
 				getCard();
 				Player.DmgTaken = 0;
 				Bot.DmgTaken = 0;
+				dmgGap = 0;
 				sumPen = 0;
 				bigCard.cardTexture = NULL;
 				turn = 0;
@@ -779,6 +788,7 @@ void levelSelect()
 					getCard();
 					Player.DmgTaken = 0;
 					Bot.DmgTaken = 0;
+					dmgGap = 0;
 					sumPen = 0;
 					bigCard.cardTexture = NULL;
 					turn = 0;
