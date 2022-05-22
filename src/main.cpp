@@ -57,6 +57,7 @@ bool init()
 bool SDLinit = init();
 
 //Button
+Button Original(546, 38, 159, 54);
 Button next(129, 161, 236, 90);
 Button nextWin(289, 473, 214, 83);
 Button retry(289, 473, 214, 83);
@@ -705,6 +706,11 @@ void menu()
 				state = 5;
 			}
 			if(quitMenu.handleButtonEvent(&event)) gameRunning = false;
+			if(Original.handleButtonEvent(&event))
+			{
+				if(soundFX) Mix_PlayChannel(-1, buttonClick, 0);
+				SDL_OpenURL("https://store.steampowered.com/app/1092790/Inscryption/");
+			}
 			if(Music.handleButtonEvent(&event))
 			{
 				if(musicFX == true)
