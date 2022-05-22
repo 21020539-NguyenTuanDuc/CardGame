@@ -82,7 +82,7 @@ void initButton()
 
 	for(int i=5;i<10;i++)
 	{
-		levelButton[i].pos.x = 30 + i*250;
+		levelButton[i].pos.x = 30 + (i-5)*250;
 		levelButton[i].pos.y = 484;
 		levelButton[i].w = 200;
 		levelButton[i].h = 200;
@@ -91,9 +91,10 @@ void initButton()
 bool levelLock[10];
 void initLevelLock()
 {
+	// std::ifstream ifS("data.txt");
 	for(int i=0;i<10;i++)
 	{
-		levelLock[i] = false;
+		levelLock[i] = true;
 	}
 }
 
@@ -108,6 +109,7 @@ SDL_Texture* noteON = window.loadTexture("res/gfx/noteON.png");
 SDL_Texture* speakerON = window.loadTexture("res/gfx/speakerON.png");
 SDL_Texture* IGinstruction = window.loadTexture("res/gfx/IGinstruction.jpg");
 SDL_Texture* IGlevelSelect = window.loadTexture("res/gfx/IGlevelSelect.jpg");
+SDL_Texture* lockTexture = window.loadTexture("res/gfx/lockTexture.jpg");
 
 // Sound
 Mix_Chunk* buttonClick = Mix_LoadWAV("res/sfx/buttonClick.wav");
@@ -757,6 +759,11 @@ void levelSelect()
 	window.clear();
 	window.renderBG(0, 0, IGlevelSelect);
 	deltaTimeCal();
+
+	for(int i=0;i<10;i++)
+	{
+		window.renderButtonLock(levelButton[i], levelLock[i], lockTexture);
+	}
 
 	while (SDL_PollEvent(&event))
 	{
