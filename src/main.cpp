@@ -91,11 +91,15 @@ void initButton()
 bool levelLock[10];
 void initLevelLock()
 {
-	// std::ifstream ifS("data.txt");
+	std::ifstream ifS("src/data.txt");
 	for(int i=0;i<10;i++)
-	{
-		levelLock[i] = true;
-	}
+    {
+        int temp;
+        ifS >> temp;
+        if(temp == 1) levelLock[i] = true;
+        else levelLock[i] = false;
+    }
+	ifS.close();
 }
 
 // Texture
@@ -566,6 +570,7 @@ void levelWon()
 	window.clear();
 	window.renderBG(0, 0, levelWin);
 	deltaTimeCal();
+	levelLock[level+1] = false;
 	while (SDL_PollEvent(&event))
 	{
 		switch(event.type)
@@ -841,6 +846,24 @@ void game()
 	}
 }
 
+void writeFile()
+{
+	std::ofstream ofS("src/data.txt");
+	for(int i=0;i<10;i++)
+	{
+		if(i!=9)
+		{
+			if(levelLock[i]) ofS << 1 << std::endl;
+			else ofS << 0 << std::endl;
+		}
+		else
+		{
+			if(levelLock[i]) ofS << 1;
+			else ofS << 0;
+		}
+	}
+	ofS.close();
+}
 
 int main( int argc, char* args[] )
 {
@@ -854,6 +877,7 @@ int main( int argc, char* args[] )
 	}
 	//Free resources and close SDL
 	window.cleanUp();
+	writeFile();
 	TTF_CloseFont(font32);
 	TTF_CloseFont(font24);
 	TTF_CloseFont(yafont32);
