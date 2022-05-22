@@ -177,7 +177,7 @@ void loadLevel(int level)
             }
             for(int i=0;i<4;i++)
             {
-                ORow[i].push_back(Card(397+i*OSstartPos_x_Step, OSstartPos_y, 3, 6, 1, None, Undeadcat));
+                ORow[i].push_back(Card(397+i*OSstartPos_x_Step, OSstartPos_y, 3, 2, 2, None, Wolf));
             }
             break;
         case 2:
@@ -187,11 +187,15 @@ void loadLevel(int level)
             }
             for(int i=0;i<4;i++)
             {
-                ORow[i].push_back(Card(397+i*OSstartPos_x_Step, OSstartPos_y, 3, 2, 2, None, Wolf));
+                ORow[i].push_back(Card(397+i*OSstartPos_x_Step, OSstartPos_y, 3, 6, 1, None, Undeadcat));
             }
             break;
+        case 3:
+            ORow[2].push_back(Card(397+2*OSstartPos_x_Step, OSstartPos_y, 1, 2, 1, None, Stoat));
+            ORow[3].push_back(Card(397+3*OSstartPos_x_Step, OSstartPos_y, 1, 2, 1, None, Stoat));
+            ORow[2].push_back(Card(397+2*OSstartPos_x_Step, OSstartPos_y, 2, 1, 0, None, Coyote));
+            ORow[3].push_back(Card(397+3*OSstartPos_x_Step, OSstartPos_y, 1, 6, 2, None, RiverSnapper));
         default:
             break;
-        
     }
 }
