@@ -10,6 +10,12 @@
   - Trò chơi có nhiều level tăng dần độ khó cho người chơi.
   - Nếu qua level thì level tiếp theo sẽ được mở trong Load Level.
 
+## Game feature
+  - Có Menu(Chơi ngay, chọn level, hướng dẫn,...).
+  - Có tắt bật âm thanh hiệu ứng và nhạc nền riêng biệt cả trong game lẫn ngoài menu.
+  - Triệu hồi thẻ bài theo các quy tắc của trò chơi.
+  - Load level để chọn màn chơi được mở sau khi đánh bại màn chơi trước đó kể cả sau khi tắt game.
+
 ## Image
 ![](res/gfx/ReadmeImage/IGmenu.png)
 
@@ -32,10 +38,10 @@
 
 ## See also
 + Các kĩ thuật trong bài tập:
-  - Thư viện SDL2.
+  - Thư viện SDL2.0 .
   - Lập trình hướng đối tượng.
   - Chia và sắp xếp file.
-  - Sử dụng âm thanh, hình ảnh bằng SDL2.
+  - Sử dụng âm thanh, hình ảnh bằng SDL2.0 .
   - Chèn các hoạt ảnh vào trong game.
   - Tạo Menu với các lựa chọn khác nhau.
   - Liên kết với đường link ngoài.
