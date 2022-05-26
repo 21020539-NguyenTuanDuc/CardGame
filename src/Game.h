@@ -494,8 +494,8 @@ void update()
 			}
 			for(int i=0;i<4;i++)
 			{
-				S[i].sCard.handleBigScreenEvent(&event, bigCard);
-				OSlot[i].sCard.handleBigScreenEvent(&event, bigCard);
+				if(S[i].isEmpty == false) S[i].sCard.handleBigScreenEvent(&event, bigCard);
+				if(OSlot[i].isEmpty == false) OSlot[i].sCard.handleBigScreenEvent(&event, bigCard);
 			}
 			if(next.handleButtonEvent(&event) && turn_over == false)
 			{
