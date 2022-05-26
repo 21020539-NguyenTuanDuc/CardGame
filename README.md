@@ -34,7 +34,8 @@
   - Yêu cầu có Visual Studio Code đã cài extension C/C++ và CodeRunner, đã cài đặt mingw64 và SDL2.
   - B1: Tải về code ngay trên Github bằng cách chọn Download Zip và giải nén.
   - B2: Chỉnh sửa địa chỉ Debugger trong file launch.json và địa chỉ mingw64 trong file task.json trong folder .vscode tùy theo máy.
-  - B3: Chạy hàm main.cpp bằng F5 để chơi.
+  - B3: thêm các file .dll vào folder src.
+  - B4: Chạy hàm main.cpp bằng F5 để chơi.
 
 ## See also
 + Các kĩ thuật trong bài tập:
@@ -46,6 +47,10 @@
   - Tạo Menu với các lựa chọn khác nhau.
   - Liên kết với đường link ngoài.
   - Sử dụng đọc/ghi file để ghi lại các sự kiện kể cả khi tắt game.
++ Những điều đã đạt được:
+  - Tự tạo ra game đầu tiên của bản thân có thể chơi được.
+  - Dành nhiều thời gian tìm hiểu và phát triển sản phẩm của mình.
+  - Thành thạo hơn các kỹ thuật class/struct, sử dụng thư viện đồ họa.
 + Nguồn tham khảo và tài nguyên:
   - https://lazyfoo.net/tutorials/SDL/ (các hàm SDL2.0, ..)
   - https://store.steampowered.com/app/1092790/Inscryption/ (Game gốc)
