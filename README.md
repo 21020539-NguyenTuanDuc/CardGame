@@ -54,7 +54,7 @@
 + Nguồn tham khảo và tài nguyên:
   - https://lazyfoo.net/tutorials/SDL/ (các hàm SDL2.0, ..)
   - https://store.steampowered.com/app/1092790/Inscryption/ (Game gốc)
-  - https://inscryption.fandom.com/wiki/Inscryption_Wiki (hình ảnh lầy về và photoshop lại)
+  - https://inscryption.fandom.com/wiki/Inscryption_Wiki (hình ảnh lấy về và photoshop lại)
   - Các hoạt ảnh và âm thanh em lấy trên các nguồn miễn phí khác.
 + Hướng phát triển:
   - Thêm các quân bài với chức năng mới mẻ hơn vào trong game.
