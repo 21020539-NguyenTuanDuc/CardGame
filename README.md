@@ -11,12 +11,13 @@
   - Nếu qua level thì level tiếp theo sẽ được mở trong Load Level.
 
 ## Image
-![](res/gfx/IGmenu.jpg)
+![](res/gfx/ReadmeImage/IGmenu.png)
 
-![](res/gfx/IGmap.jpg)
+![](res/gfx/ReadmeImage/IGplay.png)
 
-![](res/gfx/IGlevelSelect.jpg)
+![](res/gfx/ReameImage/IGlevelSelect.png)
 
 ![](res/gfx/IGinstruction.jpg)
 
 ![](res/gfx/Hawk.jpg)
+
