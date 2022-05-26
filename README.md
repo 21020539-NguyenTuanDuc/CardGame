@@ -54,5 +54,6 @@
 + Hướng phát triển:
   - Thêm các quân bài với chức năng mới mẻ hơn vào trong game.
   - Tạo thêm nhiều level độc đáo hơn.
-  
-
+  - Thêm các khả năng đặc biệt cho Boss của từng level.
+  - Thêm khả năng nâng cấp thẻ bài mỗi khi qua màn cho người chơi.
+  - Thêm khả năng thu thập thẻ bài và thay đổi bộ bài cho người chơi.
