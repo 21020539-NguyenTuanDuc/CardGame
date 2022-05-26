@@ -52,7 +52,7 @@
   - Dành nhiều thời gian tìm hiểu và phát triển sản phẩm của mình.
   - Thành thạo hơn các kỹ thuật class/struct, sử dụng thư viện đồ họa.
 + Nguồn tham khảo và tài nguyên:
-  - https://lazyfoo.net/tutorials/SDL/ (các hàm SDL2.0, ..)
+  - https://lazyfoo.net/tutorials/SDL/ (các hàm SDL2.0, ...).
   - https://store.steampowered.com/app/1092790/Inscryption/ (Game gốc)
   - https://inscryption.fandom.com/wiki/Inscryption_Wiki (hình ảnh lấy về và photoshop lại)
   - Các hoạt ảnh và âm thanh em lấy trên các nguồn miễn phí khác.
